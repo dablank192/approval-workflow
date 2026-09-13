@@ -26,5 +26,5 @@ public class WorkSpaceMember
     public DateTime JoinedAt {get; set;}
 
     public WorkSpace WorkSpace {get; set;}
-    public User user {get; set;}
+    public User User {get; set;}
 }

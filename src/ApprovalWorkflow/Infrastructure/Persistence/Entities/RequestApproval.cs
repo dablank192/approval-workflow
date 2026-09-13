@@ -14,7 +14,7 @@ public class RequestApproval
 {
     public Guid Id {get; set;}
     public Guid RequestId {get; set;}
-    public Guid WorkFlowStepId {get; set;}
+    public Guid WorkFlowId {get; set;}
     public int StepOrder {get; set;}
     public required string StepName {get; set;}
     public Guid ApprovalUserId {get; set;} //user id

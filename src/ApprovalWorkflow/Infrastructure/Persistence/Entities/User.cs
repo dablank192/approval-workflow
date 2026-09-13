@@ -16,4 +16,5 @@ public class User
     public List <WorkFlow> WorkFlow {get; set;}
     public List<Requests> Requests {get; set;}
     public List<RequestApproval> RequestApproval {get; set;}
+    public List<WorkSpace> WorkSpace {get; set;}
 }
