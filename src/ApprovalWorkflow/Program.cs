@@ -22,8 +22,23 @@ builder.Services.AddDbContext<AppDbContext>(option =>
 });
 
 
+// Add MediatR
+builder.Services.AddMediatR(config =>
+{
+    config.RegisterServicesFromAssemblyContaining<Program>();
+});
+
+
+// Add Controllers
+builder.Services.AddControllers();
+
+
 
 var app = builder.Build();
+
+
+// Add Controller
+app.MapControllers();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
