@@ -1,4 +1,5 @@
 using System;
+using ApprovalWorkflow.Infrastructure.Authentication;
 using ApprovalWorkflow.Infrastructure.Persistence;
 using ApprovalWorkflow.Infrastructure.Persistence.Entities;
 using MediatR;
@@ -39,10 +40,12 @@ public class Handler(
 {
     public async Task<Result> Handle(Command req, CancellationToken ct)
     {
+        var hashedPassword = Hasher.Hash(currentPassword: req.Password);
+        
         var newUser = new User
         {
             Email = req.Email,
-            Password = req.Password,
+            Password = hashedPassword,
             DisplayName = req.DisplayName
         };
 
