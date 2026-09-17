@@ -23,6 +23,7 @@ public class AuthLogin(
 ) : AuthApi
 {
     [HttpPost("login", Name = "AuthLogin")]
+    [ProducesResponseType<Result>(statusCode: StatusCodes.Status200OK)]
     public async Task<IActionResult> HandleAsync([FromBody]Command req)
     {
         var result = await sender.Send(req);
@@ -41,11 +42,7 @@ public class AuthLogin(
             }
         );
 
-        return CreatedAtRoute(
-            routeName: "AuthLogin",
-            routeValues: null,
-            value: result
-        );
+        return Ok(result);
     }
 }
 

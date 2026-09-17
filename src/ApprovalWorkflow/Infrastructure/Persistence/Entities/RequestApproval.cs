@@ -20,8 +20,8 @@ public class RequestApproval
     public Guid ApprovalUserId {get; set;} //user id
     public string Status {get; set;}
     public string? Comment {get; set;}
-    public DateTime ActedAt {get; set;}
-    public DateTime CreatedAt {get; set;}
+    public DateTime ActedAt {get; set;} = DateTime.UtcNow;
+    public DateTime CreatedAt {get; set;} = DateTime.UtcNow;
 
     public Requests Requests {get; set;}
     public WorkFlow WorkFlow {get; set;}

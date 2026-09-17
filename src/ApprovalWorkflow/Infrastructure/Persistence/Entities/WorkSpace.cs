@@ -7,8 +7,8 @@ public class WorkSpace
     public Guid Id {get; set;}
     public required string Name {get; set;}
     public Guid CreatedBy {get; set;} //User - workspace member Id
-    public DateTime CreatedAt {get; set;}
-    public DateTime UpdatedAt {get; set;}
+    public DateTime CreatedAt {get; set;} = DateTime.UtcNow;
+    public DateTime UpdatedAt {get; set;} = DateTime.UtcNow;
 
     public List<WorkSpaceMember> WorkSpaceMember {get; set;}
     public List<WorkFlow> WorkFlow {get; set;}

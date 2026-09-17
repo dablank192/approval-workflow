@@ -9,8 +9,8 @@ public class WorkFlowSteps
     public required string Name {get; set;}
     public int StepOrder {get; set;}
     public Guid ApprovedUserId {get; set;} //user id
-    public DateTime CreatedAt {get; set;}
-    public DateTime UpdatedAt {get; set;}
+    public DateTime CreatedAt {get; set;} = DateTime.UtcNow;
+    public DateTime UpdatedAt {get; set;} = DateTime.UtcNow;
 
     public WorkFlow WorkFlow {get; set;}
     public User User {get; set;}

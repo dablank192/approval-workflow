@@ -19,7 +19,6 @@ public class WebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         _pgContainer = new PostgreSqlBuilder()
         .WithDatabase("Testing")
-        .WithName("postgres")
         .WithPassword("postgres")
         .Build();
     }

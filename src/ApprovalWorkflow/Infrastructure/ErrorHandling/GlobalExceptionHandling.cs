@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ApprovalWorkflow.Infrastructure.ErrorHandling;
 
 public class GlobalExceptionHandler(
-    ILogger logger,
+    ILogger<GlobalExceptionHandler> logger,
     IHostEnvironment environment
 ) : IExceptionHandler
 {

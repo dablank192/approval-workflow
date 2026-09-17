@@ -16,8 +16,8 @@ public class WorkFlow
     public string? Description {get; set;}
     public WorkflowStatus Status {get; set;} = WorkflowStatus.Active;
     public Guid CreatedBy {get; set;} //User id
-    public DateTime CreatedAt {get; set;}
-    public DateTime UpdatedAt {get; set;}
+    public DateTime CreatedAt {get; set;} = DateTime.UtcNow;
+    public DateTime UpdatedAt {get; set;} = DateTime.UtcNow;
 
     public WorkSpace WorkSpace {get; set;}
     public List<WorkFlowSteps> WorkFlowSteps {get; set;}

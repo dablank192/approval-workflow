@@ -8,8 +8,8 @@ public class User
     public required string Email {get; set;}
     public required string Password {get; set;}
     public required string DisplayName {get; set;}
-    public DateTime CreatedAt {get; set;}
-    public DateTime UpdatedAt {get; set;}
+    public DateTime CreatedAt {get; set;} = DateTime.UtcNow;
+    public DateTime UpdatedAt {get; set;} = DateTime.UtcNow;
 
     public List<WorkSpaceMember> WorkspaceMember {get; set;}
     public List<WorkFlowSteps> WorkFlowSteps {get; set;}

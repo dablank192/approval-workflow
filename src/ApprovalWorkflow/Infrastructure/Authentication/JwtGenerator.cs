@@ -17,7 +17,7 @@ public class JwtGenerator(
 {
     public string GenerateToken(Guid userId)
     {
-        var jwtKey = _config["Jwt:Key"]!;
+        var jwtKey = _config["Jwt:Secret"]!;
         
         var claim = new Claim[]{
             new(JwtRegisteredClaimNames.Sub, userId.ToString())
