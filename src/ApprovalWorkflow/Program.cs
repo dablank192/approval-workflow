@@ -1,6 +1,10 @@
 using ApprovalWorkflow.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using ApprovalWorkflow.Infrastructure.Authentication;
 
 
 //Load environment variable
@@ -12,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddOpenApi();
+builder.Services.AddSingleton<IJwtgenerator, JwtGenerator>();
 
 
 // Db Context Register
@@ -33,6 +38,35 @@ builder.Services.AddMediatR(config =>
 builder.Services.AddControllers();
 
 
+// Add authentication
+var jwtKey = builder.Configuration["Jwt:Secret"];
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(option =>
+{
+    option.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            key: Encoding.UTF8.GetBytes(jwtKey!)
+        ),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true
+    };
+
+    option.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            context.Token = context.Request.Cookies["access-token"];
+
+            return Task.CompletedTask;
+        }
+    };
+});
+
+
 
 var app = builder.Build();
 
@@ -46,6 +80,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+
+app.UseAuthentication();
 app.UseHttpsRedirection();
 
 
