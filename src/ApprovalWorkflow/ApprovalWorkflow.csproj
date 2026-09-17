@@ -25,6 +25,7 @@
     <Folder Include="Feature\Auth\Login\" />
     <Folder Include="Infrastructure\" />
     <Folder Include="Infrastructure\Authentication\" />
+    <Folder Include="Infrastructure\ErrorHandling\" />
     <Folder Include="Infrastructure\Persistence\" />
     <Folder Include="Infrastructure\Persistence\Configuration\" />
     <Folder Include="Infrastructure\Persistence\Entities\" />

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ApprovalWorkflow.Infrastructure.Authentication;
+using ApprovalWorkflow.Infrastructure.ErrorHandling;
 
 
 //Load environment variable
@@ -17,6 +18,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddOpenApi();
 builder.Services.AddSingleton<IJwtgenerator, JwtGenerator>();
+
+
+// Add Global Exception Handler
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 
 // Db Context Register
@@ -73,6 +79,11 @@ var app = builder.Build();
 
 // Add Controller
 app.MapControllers();
+
+
+// Add Global Exception Handler
+app.UseExceptionHandler();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
