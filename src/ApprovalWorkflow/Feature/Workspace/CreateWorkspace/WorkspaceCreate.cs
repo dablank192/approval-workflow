@@ -8,16 +8,16 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ApprovalWorkflow.Feature.Workspace.CreateWorkspace;
 
-public record Command(
+public record WorkspaceCreateCommand(
     string WorkspaceName,
     Guid UserId
-) : IRequest<Result>;
+) : IRequest<WorkspaceCreateResult>;
 
-public record SubCommand(
+public record SubWorkspaceCreateCommand(
     string WorkspaceName
 );
 
-public record Result(
+public record WorkspaceCreateResult(
     Guid WorkspaceId
 );
 
@@ -25,16 +25,16 @@ public class WorkspaceCreate(
     ISender sender
 ) : WorkspaceApi
 {
-    [ProducesResponseType<ApiResponse<Result>>(statusCode: StatusCodes.Status201Created)]
+    [ProducesResponseType<ApiResponse<WorkspaceCreateResult>>(statusCode: StatusCodes.Status201Created)]
     [HttpPost("new", Name = "CreateWorkspace")]
-    public async Task<IActionResult> HandleAsync([FromBody] SubCommand req, CancellationToken ct)
+    public async Task<IActionResult> HandleAsync([FromBody] SubWorkspaceCreateCommand req, CancellationToken ct)
     {   
-        var result = await sender.Send(new Command(
+        var result = await sender.Send(new WorkspaceCreateCommand(
             WorkspaceName: req.WorkspaceName,
             UserId: User.GetCurrentUserId()
         ), ct);
 
-        var response = ApiResponse<Result>.Success(
+        var response = ApiResponse<WorkspaceCreateResult>.Success(
             data: result,
             message: "Workspace created successfully"
         );
@@ -48,10 +48,10 @@ public class WorkspaceCreate(
 
 public class Handler(
     AppDbContext dbContext
-) : IRequestHandler<Command, Result>
+) : IRequestHandler<WorkspaceCreateCommand, WorkspaceCreateResult>
 
 {
-    public async Task<Result> Handle(Command req, CancellationToken ct)
+    public async Task<WorkspaceCreateResult> Handle(WorkspaceCreateCommand req, CancellationToken ct)
     {
         using var transaction = await dbContext.Database.BeginTransactionAsync(ct);
         
@@ -76,7 +76,7 @@ public class Handler(
 
         await transaction.CommitAsync(ct);
 
-        return new Result(
+        return new WorkspaceCreateResult(
             WorkspaceId: newWs.Id
         );
     }

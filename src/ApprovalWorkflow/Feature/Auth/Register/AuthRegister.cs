@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ApprovalWorkflow.Feature.Auth.Register;
 
-public record Command(
+public record AuthRegisterCommand(
     string DisplayName,
     string Email,
     string Password
-) : IRequest<Result>;
-public record Result(
+) : IRequest<AuthRegisterResult>;
+public record AuthRegisterResult(
     Guid UserId
 );
 
@@ -22,12 +22,12 @@ public class UserRegister(
 ) : AuthApi
 {
     [HttpPost("register", Name = "AuthRegister")]
-    [ProducesResponseType<ApiResponse<Result>>(StatusCodes.Status201Created)]
-    public async Task<IActionResult> HandleAsync([FromBody] Command req, CancellationToken ct)
+    [ProducesResponseType<ApiResponse<AuthRegisterResult>>(StatusCodes.Status201Created)]
+    public async Task<IActionResult> HandleAsync([FromBody] AuthRegisterCommand req, CancellationToken ct)
     {
         var result = await sender.Send(req, ct);
 
-        var response = ApiResponse<Result>.Success(
+        var response = ApiResponse<AuthRegisterResult>.Success(
             data: result,
             message: "Account created successfully"
         );
@@ -41,9 +41,9 @@ public class UserRegister(
 
 public class Handler(
     AppDbContext dbContext
-) : IRequestHandler<Command, Result>
+) : IRequestHandler<AuthRegisterCommand, AuthRegisterResult>
 {
-    public async Task<Result> Handle(Command req, CancellationToken ct)
+    public async Task<AuthRegisterResult> Handle(AuthRegisterCommand req, CancellationToken ct)
     {
         var hashedPassword = Hasher.Hash(currentPassword: req.Password);
         
@@ -57,7 +57,7 @@ public class Handler(
         dbContext.User.Add(newUser);
         await dbContext.SaveChangesAsync(ct);
 
-        return new Result(
+        return new AuthRegisterResult(
             UserId: newUser.Id
             );
     }

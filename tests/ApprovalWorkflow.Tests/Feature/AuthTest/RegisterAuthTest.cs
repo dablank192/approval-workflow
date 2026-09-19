@@ -1,5 +1,5 @@
 using System;
-using register = ApprovalWorkflow.Feature.Auth.Register;
+using Register = ApprovalWorkflow.Feature.Auth.Register;
 using ApprovalWorkflow.Tests.Infrastructure;
 using System.Net.Http.Json;
 using System.Net;
@@ -21,7 +21,7 @@ public class RegisterAuthTest : IClassFixture<WebAppFactory>
     {
 
         //Given
-        var payload = new register.Command(
+        var payload = new Register.AuthRegisterCommand(
             DisplayName: "admin",
             Email: "example@email.com",
             Password: "abc123"
@@ -33,7 +33,7 @@ public class RegisterAuthTest : IClassFixture<WebAppFactory>
             "/api/v1/auth/register",
             payload
         );
-        var response = await request.Content.ReadFromJsonAsync<register.Result>();
+        var response = await request.Content.ReadFromJsonAsync<Register.AuthRegisterResult>();
 
 
         //Then

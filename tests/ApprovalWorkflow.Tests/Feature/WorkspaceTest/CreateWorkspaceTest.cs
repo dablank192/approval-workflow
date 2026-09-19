@@ -8,7 +8,7 @@ using ApprovalWorkflow.Infrastructure.Persistence.Entities;
 using ApprovalWorkflow.Tests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using workflow = ApprovalWorkflow.Feature.Workspace.CreateWorkspace;
+using Workflow = ApprovalWorkflow.Feature.Workspace.CreateWorkspace;
 
 namespace ApprovalWorkflow.Tests.Feature.WorkspaceTest;
 
@@ -50,7 +50,7 @@ public class CreateWorkspaceTest : IClassFixture<WebAppFactory>
             value: $"access_token={accessToken}" 
         );
 
-        var payload = new workflow.SubCommand(
+        var payload = new Workflow.SubWorkspaceCreateCommand(
             WorkspaceName: "Workspace Test"
         );
 
