@@ -21,8 +21,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Common\" />
+    <Folder Include="Common\Extensions\" />
     <Folder Include="Feature\Auth\Exceptions\" />
     <Folder Include="Feature\Auth\Login\" />
+    <Folder Include="Feature\Workspace\" />
+    <Folder Include="Feature\Workspace\CreateWorkspace\" />
     <Folder Include="Infrastructure\" />
     <Folder Include="Infrastructure\Authentication\" />
     <Folder Include="Infrastructure\ErrorHandling\" />

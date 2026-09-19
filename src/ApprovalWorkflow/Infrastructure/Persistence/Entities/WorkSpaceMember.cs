@@ -22,7 +22,7 @@ public class WorkSpaceMember
     public Guid UserId {get; set;}
     public Guid WorkSpaceId {get; set;}
     public required string Roles {get; set;} = MemberRoles.Member;
-    public string Status {get; set;} = MemberRoles.Member;
+    public MemberStatus Status {get; set;} = MemberStatus.Active;
     public DateTime JoinedAt {get; set;} = DateTime.UtcNow;
 
     public WorkSpace WorkSpace {get; set;}
