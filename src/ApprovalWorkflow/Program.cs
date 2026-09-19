@@ -44,7 +44,7 @@ builder.Services.AddMediatR(config =>
 builder.Services.AddControllers();
 
 
-// Add authentication
+// Add Auth
 var jwtKey = builder.Configuration["Jwt:Secret"];
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -73,18 +73,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         }
     };
 });
+builder.Services.AddAuthorization();
 
 
 
 var app = builder.Build();
 
 
-// Add Controller
-app.MapControllers();
-
 
 // Add Global Exception Handler
 app.UseExceptionHandler();
+
+
+// Add Auth
+app.UseAuthentication();
+app.UseAuthorization();
+
+
+// Add Controller
+app.MapControllers();
 
 
 // Configure the HTTP request pipeline.
@@ -94,7 +101,6 @@ if (app.Environment.IsDevelopment())
 }
 
 
-app.UseAuthentication();
 app.UseHttpsRedirection();
 
 

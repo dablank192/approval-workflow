@@ -72,7 +72,7 @@ public class CreateWorkspaceTest : IClassFixture<WebAppFactory>
         var verifyDbContext = verifyScope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var workspace = await verifyDbContext.WorkSpace.SingleAsync(
-            t => t.Name == "Workplace Test"
+            t => t.Name == "Workspace Test"
         );
 
         Assert.Equal(

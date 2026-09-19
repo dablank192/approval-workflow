@@ -22,7 +22,7 @@ public class UserRegister(
 ) : AuthApi
 {
     [HttpPost("register", Name = "AuthRegister")]
-    [ProducesResponseType<Result>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ApiResponse<Result>>(StatusCodes.Status201Created)]
     public async Task<IActionResult> HandleAsync([FromBody] Command req, CancellationToken ct)
     {
         var result = await sender.Send(req, ct);

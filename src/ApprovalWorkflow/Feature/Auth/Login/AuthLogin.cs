@@ -1,4 +1,5 @@
 using System;
+using ApprovalWorkflow.Common.Api;
 using ApprovalWorkflow.Feature.Auth.Exceptions;
 using ApprovalWorkflow.Infrastructure.Authentication;
 using ApprovalWorkflow.Infrastructure.Persistence;
@@ -23,7 +24,7 @@ public class AuthLogin(
 ) : AuthApi
 {
     [HttpPost("login", Name = "AuthLogin")]
-    [ProducesResponseType<Result>(statusCode: StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiResponse<Result>>(statusCode: StatusCodes.Status200OK)]
     public async Task<IActionResult> HandleAsync([FromBody]Command req)
     {
         var result = await sender.Send(req);
@@ -42,7 +43,12 @@ public class AuthLogin(
             }
         );
 
-        return Ok(result);
+        var response = ApiResponse<Result>.Success(
+            data: result,
+            message: null
+        );
+
+        return Ok(response);
     }
 }
 

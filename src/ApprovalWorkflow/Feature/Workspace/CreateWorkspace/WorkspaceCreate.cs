@@ -25,7 +25,7 @@ public class WorkspaceCreate(
     ISender sender
 ) : WorkspaceApi
 {
-    [ProducesResponseType<Result>(statusCode: StatusCodes.Status201Created)]
+    [ProducesResponseType<ApiResponse<Result>>(statusCode: StatusCodes.Status201Created)]
     [HttpPost("new", Name = "CreateWorkspace")]
     public async Task<IActionResult> HandleAsync([FromBody] SubCommand req, CancellationToken ct)
     {   
@@ -63,8 +63,6 @@ public class Handler(
         
         dbContext.WorkSpace.Add(newWs);
         await dbContext.SaveChangesAsync(ct);
-
-        var workSpace = await dbContext.WorkSpace.FindAsync(newWs.Id, ct);
         
         var newMember = new WorkSpaceMember
         {
