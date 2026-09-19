@@ -1,4 +1,5 @@
 using System;
+using ApprovalWorkflow.Common.Api;
 using ApprovalWorkflow.Infrastructure.Authentication;
 using ApprovalWorkflow.Infrastructure.Persistence;
 using ApprovalWorkflow.Infrastructure.Persistence.Entities;
@@ -26,10 +27,14 @@ public class UserRegister(
     {
         var result = await sender.Send(req, ct);
 
-        return CreatedAtRoute(
-            routeName: "AuthRegister",
-            routeValues: null,
-            value: result
+        var response = ApiResponse<Result>.Success(
+            data: result,
+            message: "Account created successfully"
+        );
+
+        return StatusCode(
+            statusCode: StatusCodes.Status201Created,
+            value: response
         );
     }
 }

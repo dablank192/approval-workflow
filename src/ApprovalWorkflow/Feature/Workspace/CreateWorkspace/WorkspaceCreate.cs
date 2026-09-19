@@ -1,14 +1,10 @@
 using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Claims;
+using ApprovalWorkflow.Common.Api;
 using ApprovalWorkflow.Common.Extensions;
 using ApprovalWorkflow.Infrastructure.Persistence;
 using ApprovalWorkflow.Infrastructure.Persistence.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 
 namespace ApprovalWorkflow.Feature.Workspace.CreateWorkspace;
 
@@ -36,12 +32,16 @@ public class WorkspaceCreate(
         var result = await sender.Send(new Command(
             WorkspaceName: req.WorkspaceName,
             UserId: User.GetCurrentUserId()
-        ),ct);
+        ), ct);
 
-        return CreatedAtRoute(
-            routeName: "CreateWorkspace",
-            value: result,
-            routeValues: null
+        var response = ApiResponse<Result>.Success(
+            data: result,
+            message: "Workspace created successfully"
+        );
+
+        return StatusCode(
+            statusCode: StatusCodes.Status201Created,
+            value: response
         );
     }
 }

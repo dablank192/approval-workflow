@@ -50,6 +50,8 @@ var jwtKey = builder.Configuration["Jwt:Secret"];
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(option =>
 {
+    option.MapInboundClaims = false;
+
     option.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
@@ -65,7 +67,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         OnMessageReceived = context =>
         {
-            context.Token = context.Request.Cookies["access-token"];
+            context.Token = context.Request.Cookies["access_token"];
 
             return Task.CompletedTask;
         }
