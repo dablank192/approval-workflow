@@ -28,6 +28,7 @@
     <Folder Include="Feature\Auth\Exceptions\" />
     <Folder Include="Feature\Auth\Login\" />
     <Folder Include="Feature\Workspace\" />
+    <Folder Include="Feature\Workspace\AddMembers\" />
     <Folder Include="Feature\Workspace\CreateWorkspace\" />
     <Folder Include="Feature\Workspace\Exceptions\" />
     <Folder Include="Feature\Workspace\GetWorkspace\" />

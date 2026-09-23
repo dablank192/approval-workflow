@@ -1,5 +1,6 @@
 using System;
 using ApprovalWorkflow.Feature.Auth.Exceptions;
+using ApprovalWorkflow.Feature.Workspace.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,6 +26,11 @@ public class GlobalExceptionHandler(
             InvalidUsernameOrPasswordException =>(
                 StatusCodes.Status401Unauthorized,
                 "Invalid Username or Password"
+            ),
+
+            InvalidRoleAssignmentException =>(
+                StatusCodes.Status403Forbidden,
+                "Invalid Roles Assignment"
             ),
 
             _ => (
