@@ -24,6 +24,7 @@
   <ItemGroup>
     <Folder Include="Common\" />
     <Folder Include="Common\Api\" />
+    <Folder Include="Common\Exceptions\" />
     <Folder Include="Common\Extensions\" />
     <Folder Include="Feature\Auth\Exceptions\" />
     <Folder Include="Feature\Auth\Login\" />

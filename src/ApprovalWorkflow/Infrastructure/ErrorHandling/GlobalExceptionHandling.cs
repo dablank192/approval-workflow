@@ -1,4 +1,5 @@
 using System;
+using ApprovalWorkflow.Common.Exceptions;
 using ApprovalWorkflow.Feature.Auth.Exceptions;
 using ApprovalWorkflow.Feature.Workspace.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
@@ -31,6 +32,11 @@ public class GlobalExceptionHandler(
             InvalidRoleAssignmentException =>(
                 StatusCodes.Status403Forbidden,
                 "Invalid Roles Assignment"
+            ),
+
+            UserNotFoundException => (
+                StatusCodes.Status404NotFound,
+                "User Not Found"
             ),
 
             _ => (

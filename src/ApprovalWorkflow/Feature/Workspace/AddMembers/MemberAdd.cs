@@ -1,12 +1,14 @@
 using System;
 using System.Net;
 using ApprovalWorkflow.Common.Api;
+using ApprovalWorkflow.Common.Exceptions;
 using ApprovalWorkflow.Common.Extensions;
 using ApprovalWorkflow.Feature.Workspace.Exceptions;
 using ApprovalWorkflow.Infrastructure.Persistence;
 using ApprovalWorkflow.Infrastructure.Persistence.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApprovalWorkflow.Feature.Workspace.AddMembers;
 
@@ -62,6 +64,11 @@ public class Handler(
             reason: "Owner role aren't allowed while adding new member"
         );
         
+        var user = await dbContext.User.FindAsync(req.UserId, ct)
+        ?? throw new UserNotFoundException(
+            reason: "User's Id not found"
+        );
+
         var newMember = new WorkSpaceMember
         {
             UserId = req.UserId,
