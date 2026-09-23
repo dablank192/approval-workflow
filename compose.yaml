@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: postgres:18
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: approval_workflow
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres-data:/var/lib/postgresql
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d approval_workflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data:

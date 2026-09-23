@@ -1,4 +1,5 @@
 using System;
+using ApprovalWorkflow.Common.Api;
 using ApprovalWorkflow.Feature.Auth.Exceptions;
 using ApprovalWorkflow.Infrastructure.Authentication;
 using ApprovalWorkflow.Infrastructure.Persistence;
@@ -9,11 +10,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApprovalWorkflow.Feature.Auth.Login;
 
-public record Command(
+public record AuthLoginCommand(
     string Email,
     string Password
-) : IRequest<Result>;
-public record Result(
+) : IRequest<AuthLoginResult>;
+public record AuthLoginResult(
     Guid UserId
 );
 
@@ -23,8 +24,8 @@ public class AuthLogin(
 ) : AuthApi
 {
     [HttpPost("login", Name = "AuthLogin")]
-    [ProducesResponseType<Result>(statusCode: StatusCodes.Status200OK)]
-    public async Task<IActionResult> HandleAsync([FromBody]Command req)
+    [ProducesResponseType<ApiResponse<AuthLoginResult>>(statusCode: StatusCodes.Status200OK)]
+    public async Task<IActionResult> HandleAsync([FromBody]AuthLoginCommand req)
     {
         var result = await sender.Send(req);
 
@@ -42,15 +43,20 @@ public class AuthLogin(
             }
         );
 
-        return Ok(result);
+        var response = ApiResponse<AuthLoginResult>.Success(
+            data: result,
+            message: "success"
+        );
+
+        return Ok(response);
     }
 }
 
 public class Handler(
     AppDbContext dbContext
-) : IRequestHandler<Command, Result>
+) : IRequestHandler<AuthLoginCommand, AuthLoginResult>
 {
-    public async Task<Result> Handle(Command req, CancellationToken ct)
+    public async Task<AuthLoginResult> Handle(AuthLoginCommand req, CancellationToken ct)
     {
         var validEmail = await dbContext.User.FirstOrDefaultAsync(
             t => t.Email == req.Email,
@@ -65,6 +71,6 @@ public class Handler(
 
         if(validPassword == false) throw new InvalidUsernameOrPasswordException("Incorrect Password");
 
-        return new Result(UserId: validEmail.Id);
+        return new AuthLoginResult(UserId: validEmail.Id);
     }
 }

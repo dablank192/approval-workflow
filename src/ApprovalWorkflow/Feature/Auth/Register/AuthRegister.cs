@@ -1,4 +1,5 @@
 using System;
+using ApprovalWorkflow.Common.Api;
 using ApprovalWorkflow.Infrastructure.Authentication;
 using ApprovalWorkflow.Infrastructure.Persistence;
 using ApprovalWorkflow.Infrastructure.Persistence.Entities;
@@ -7,12 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ApprovalWorkflow.Feature.Auth.Register;
 
-public record Command(
+public record AuthRegisterCommand(
     string DisplayName,
     string Email,
     string Password
-) : IRequest<Result>;
-public record Result(
+) : IRequest<AuthRegisterResult>;
+public record AuthRegisterResult(
     Guid UserId
 );
 
@@ -21,24 +22,28 @@ public class UserRegister(
 ) : AuthApi
 {
     [HttpPost("register", Name = "AuthRegister")]
-    [ProducesResponseType<Result>(StatusCodes.Status201Created)]
-    public async Task<IActionResult> HandleAsync([FromBody] Command req, CancellationToken ct)
+    [ProducesResponseType<ApiResponse<AuthRegisterResult>>(StatusCodes.Status201Created)]
+    public async Task<IActionResult> HandleAsync([FromBody] AuthRegisterCommand req, CancellationToken ct)
     {
         var result = await sender.Send(req, ct);
 
-        return CreatedAtRoute(
-            routeName: "AuthRegister",
-            routeValues: null,
-            value: result
+        var response = ApiResponse<AuthRegisterResult>.Success(
+            data: result,
+            message: "Account created successfully"
+        );
+
+        return StatusCode(
+            statusCode: StatusCodes.Status201Created,
+            value: response
         );
     }
 }
 
 public class Handler(
     AppDbContext dbContext
-) : IRequestHandler<Command, Result>
+) : IRequestHandler<AuthRegisterCommand, AuthRegisterResult>
 {
-    public async Task<Result> Handle(Command req, CancellationToken ct)
+    public async Task<AuthRegisterResult> Handle(AuthRegisterCommand req, CancellationToken ct)
     {
         var hashedPassword = Hasher.Hash(currentPassword: req.Password);
         
@@ -52,7 +57,7 @@ public class Handler(
         dbContext.User.Add(newUser);
         await dbContext.SaveChangesAsync(ct);
 
-        return new Result(
+        return new AuthRegisterResult(
             UserId: newUser.Id
             );
     }

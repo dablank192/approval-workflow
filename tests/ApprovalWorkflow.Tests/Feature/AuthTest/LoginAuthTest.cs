@@ -42,7 +42,7 @@ public class LoginAuthTest : IClassFixture<WebAppFactory>
         dbContext.User.Add(testData);
         await dbContext.SaveChangesAsync();
 
-        var payload = new Login.Command(
+        var payload = new Login.AuthLoginCommand(
             Email: "abc@email.com",
             Password: "abc1234"
         );

@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ApprovalWorkflow.Infrastructure.Authentication;
 using ApprovalWorkflow.Infrastructure.ErrorHandling;
+using Scalar.AspNetCore;
 
 
 //Load environment variable
@@ -44,12 +45,14 @@ builder.Services.AddMediatR(config =>
 builder.Services.AddControllers();
 
 
-// Add authentication
+// Add Auth
 var jwtKey = builder.Configuration["Jwt:Secret"];
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(option =>
 {
+    option.MapInboundClaims = false;
+
     option.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
@@ -65,34 +68,41 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         OnMessageReceived = context =>
         {
-            context.Token = context.Request.Cookies["access-token"];
+            context.Token = context.Request.Cookies["access_token"];
 
             return Task.CompletedTask;
         }
     };
 });
+builder.Services.AddAuthorization();
 
 
 
 var app = builder.Build();
 
 
-// Add Controller
-app.MapControllers();
-
 
 // Add Global Exception Handler
 app.UseExceptionHandler();
+
+
+// Add Auth
+app.UseAuthentication();
+app.UseAuthorization();
+
+
+// Add Controller
+app.MapControllers();
 
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 
-app.UseAuthentication();
 app.UseHttpsRedirection();
 
 
