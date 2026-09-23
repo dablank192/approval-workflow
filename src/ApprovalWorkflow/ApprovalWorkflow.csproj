@@ -31,6 +31,7 @@
     <Folder Include="Feature\Workspace\AddMembers\" />
     <Folder Include="Feature\Workspace\CreateWorkspace\" />
     <Folder Include="Feature\Workspace\Exceptions\" />
+    <Folder Include="Feature\Workspace\GetAllMember\" />
     <Folder Include="Feature\Workspace\GetWorkspace\" />
     <Folder Include="Feature\Workspace\GetMyWorkspace\" />
     <Folder Include="Infrastructure\" />
