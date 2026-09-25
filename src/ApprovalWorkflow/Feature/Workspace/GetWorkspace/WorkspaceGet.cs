@@ -1,14 +1,21 @@
 using System;
 using ApprovalWorkflow.Common.Api;
+using ApprovalWorkflow.Common.Extensions;
 using ApprovalWorkflow.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApprovalWorkflow.Feature.Workspace.GetWorkspace;
 
 public record WorkspaceGetQuery(
-    Guid WorkspaceId
+    Guid WorkspaceId,
+    Guid UserId
 ) : IRequest<WorkspaceGetResult>;
+
+public record WorkspaceGetSubQuery(
+    Guid WorkspaceId
+);
 
 public record WorkspaceGetResult(
     Guid? WorkspaceId,
@@ -24,9 +31,12 @@ public class WorkspaceGet(
 {
     [HttpGet("{workspaceId}")]
     [ProducesResponseType<WorkspaceGetResult>(statusCode: StatusCodes.Status200OK)]
-    public async Task<IActionResult> HandleAsync([AsParameters] WorkspaceGetQuery req)
+    public async Task<IActionResult> HandleAsync([AsParameters] WorkspaceGetSubQuery req)
     {
-        var result = await sender.Send(req);
+        var result = await sender.Send(new WorkspaceGetQuery(
+            WorkspaceId: req.WorkspaceId,
+            UserId: User.GetCurrentUserId()
+        ));
 
         var response = ApiResponse<WorkspaceGetResult>.Success(
             data: result,
@@ -44,14 +54,18 @@ public class Handler(
 {
     public async Task<WorkspaceGetResult> Handle(WorkspaceGetQuery req, CancellationToken ct)
     {
-        var wp = await dbContext.WorkSpace.FindAsync(req.WorkspaceId, ct);
+        var wp = await dbContext.WorkSpaceMember.FirstOrDefaultAsync(
+            t => t.WorkSpaceId == req.WorkspaceId
+            &&
+            t.UserId == req.UserId
+            , ct);
         
         var response = new WorkspaceGetResult(
             WorkspaceId: wp.Id,
-            Name: wp.Name,
-            CreatedBy: wp.CreatedBy,
-            CreatedAt: wp.CreatedAt,
-            UpdatedAt: wp.UpdatedAt
+            Name: wp.WorkSpace.Name,
+            CreatedBy: wp.WorkSpace.CreatedBy,
+            CreatedAt: wp.WorkSpace.CreatedAt,
+            UpdatedAt: wp.WorkSpace.UpdatedAt
         );
 
         return response;

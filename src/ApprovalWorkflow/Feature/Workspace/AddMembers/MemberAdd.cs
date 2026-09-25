@@ -1,14 +1,11 @@
 using System;
-using System.Net;
 using ApprovalWorkflow.Common.Api;
 using ApprovalWorkflow.Common.Exceptions;
-using ApprovalWorkflow.Common.Extensions;
 using ApprovalWorkflow.Feature.Workspace.Exceptions;
 using ApprovalWorkflow.Infrastructure.Persistence;
 using ApprovalWorkflow.Infrastructure.Persistence.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace ApprovalWorkflow.Feature.Workspace.AddMembers;
 
@@ -17,11 +14,6 @@ public record MemberAddCommand(
     Guid WorkspaceId,
     string Roles
 ) : IRequest<MemberAddResult>;
-
-public record MemberAddSubCommand(
-    Guid WorkspaceId,
-    string Roles
-);
 
 public record MemberAddResult(
     Guid? UserId
@@ -33,14 +25,9 @@ public class MemberAdd(
 {
     [HttpPost("new-member")]
     [ProducesResponseType<ApiResponse<MemberAddResult>>(StatusCodes.Status201Created)]
-    public async Task<IActionResult> HandleAsync([FromBody] MemberAddSubCommand req, CancellationToken ct)
+    public async Task<IActionResult> HandleAsync([FromBody] MemberAddCommand req, CancellationToken ct)
     {
-        var result = await sender.Send(
-            new MemberAddCommand(
-                UserId: User.GetCurrentUserId(),
-                WorkspaceId: req.WorkspaceId,
-                Roles: req.Roles
-            ), ct);
+        var result = await sender.Send(req, ct);
 
         var response = ApiResponse<MemberAddResult>.Success(
             data: result,

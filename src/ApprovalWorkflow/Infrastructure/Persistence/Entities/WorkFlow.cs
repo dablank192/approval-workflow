@@ -4,8 +4,9 @@ namespace ApprovalWorkflow.Infrastructure.Persistence.Entities;
 
 public enum WorkflowStatus
 {
-    Active = 0,
-    Inactive = 1
+    Draft = 0,
+    Active = 1,
+    Inactive = 2
 }
 
 public class WorkFlow
