@@ -1,5 +1,7 @@
 using System;
 using ApprovalWorkflow.Common.Api;
+using ApprovalWorkflow.Common.Exceptions;
+using ApprovalWorkflow.Common.Extensions;
 using ApprovalWorkflow.Infrastructure.Persistence;
 using ApprovalWorkflow.Infrastructure.Persistence.Entities;
 using MediatR;
@@ -10,8 +12,14 @@ namespace ApprovalWorkflow.Feature.Workspace.GetAllMember;
 
 public record GetAllMemberQuery(
     Guid WorkspaceId,
-    string? Roles
+    string? Roles,
+    Guid UserId
 ) : IRequest<List<GetAllMemberResult>>;
+
+public record GetAllMemberSubQuery(
+    Guid WorkspaceId,
+    string? Roles
+);
 
 public record GetAllMemberResult(
     Guid UserId,
@@ -26,9 +34,13 @@ public class GetAllMember(
 {
     [HttpGet("members")]
     [ProducesResponseType<List<GetAllMemberResult>>(statusCode: StatusCodes.Status200OK)]
-    public async Task<IActionResult> HandleAsync([FromQuery] GetAllMemberQuery req)
+    public async Task<IActionResult> HandleAsync([FromQuery] GetAllMemberSubQuery req)
     {
-        var result = await sender.Send(req);
+        var result = await sender.Send(new GetAllMemberQuery(
+            WorkspaceId: req.WorkspaceId,
+            Roles: req.Roles,
+            UserId: User.GetCurrentUserId()
+        ));
 
         var response = ApiResponse<List<GetAllMemberResult>>.Success(
             data: result,
@@ -45,6 +57,12 @@ public class Handler(
 {
     public async Task<List<GetAllMemberResult>> Handle(GetAllMemberQuery req, CancellationToken ct)
     {
+        var validUser = await dbContext.WorkSpace.FirstOrDefaultAsync(
+            t => t.CreatedBy == req.UserId,
+            ct
+        )
+        ?? throw new UserNotFoundException(reason: "User is not the owner of this workspace");
+        
         var members = await dbContext.WorkSpaceMember
         .Where(t => t.WorkSpaceId == req.WorkspaceId)
         .Select(t => new GetAllMemberResult(

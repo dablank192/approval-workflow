@@ -48,7 +48,8 @@ public class MemberAddTest : IClassFixture<WebAppFactory>
         };
         dbContext.WorkSpace.Add(newWorkspace);
 
-        var payload = new MemberAddSubCommand(
+        var payload = new MemberAddCommand(
+            UserId: newUser.Id,
             WorkspaceId: newWorkspace.Id,
             Roles: MemberRoles.Member
         );

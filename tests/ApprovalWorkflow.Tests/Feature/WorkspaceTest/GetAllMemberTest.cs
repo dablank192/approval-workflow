@@ -55,7 +55,7 @@ public class GetAllMemberTest : IClassFixture<WebAppFactory>
 
         await dbContext.SaveChangesAsync();
 
-        var payload = new GetAllMemberQuery(
+        var payload = new GetAllMemberSubQuery(
             WorkspaceId: newWorkspace.Id,
             Roles: MemberRoles.Member
         );
