@@ -28,6 +28,8 @@
     <Folder Include="Common\Extensions\" />
     <Folder Include="Feature\Auth\Exceptions\" />
     <Folder Include="Feature\Auth\Login\" />
+    <Folder Include="Feature\Workflow\" />
+    <Folder Include="Feature\Workflow\CreateWorkflow\" />
     <Folder Include="Feature\Workspace\" />
     <Folder Include="Feature\Workspace\AddMembers\" />
     <Folder Include="Feature\Workspace\CreateWorkspace\" />
