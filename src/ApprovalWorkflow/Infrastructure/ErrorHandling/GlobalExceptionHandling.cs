@@ -1,6 +1,7 @@
 using System;
 using ApprovalWorkflow.Common.Exceptions;
 using ApprovalWorkflow.Feature.Auth.Exceptions;
+using ApprovalWorkflow.Feature.Workflow.Exceptions;
 using ApprovalWorkflow.Feature.Workspace.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +38,11 @@ public class GlobalExceptionHandler(
             UserNotFoundException => (
                 StatusCodes.Status404NotFound,
                 "User Not Found"
+            ),
+
+            InvalidWorkflowCreationException => (
+                StatusCodes.Status400BadRequest,
+                "Invalid Workflow Creation"
             ),
 
             _ => (
