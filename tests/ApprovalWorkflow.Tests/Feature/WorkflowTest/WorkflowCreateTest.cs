@@ -1,5 +1,4 @@
 using System;
-using System.Data.Common;
 using System.Net;
 using System.Net.Http.Json;
 using ApprovalWorkflow.Common.Api;
