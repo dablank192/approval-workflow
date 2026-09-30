@@ -45,6 +45,16 @@ public class GlobalExceptionHandler(
                 "Invalid Workflow Creation"
             ),
 
+            InvalidWorkflowException => (
+                StatusCodes.Status400BadRequest,
+                "Invalid Workflow"
+            ),
+
+            WorkflowNotFoundException => (
+                StatusCodes.Status404NotFound,
+                "Workflow not found"
+            ),
+
             _ => (
                 StatusCodes.Status500InternalServerError,
                 "Unknown System Error"

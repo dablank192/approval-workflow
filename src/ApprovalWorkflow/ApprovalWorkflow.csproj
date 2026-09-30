@@ -29,6 +29,7 @@
     <Folder Include="Feature\Auth\Exceptions\" />
     <Folder Include="Feature\Auth\Login\" />
     <Folder Include="Feature\Workflow\" />
+    <Folder Include="Feature\Workflow\AddWorkflowStep\" />
     <Folder Include="Feature\Workflow\CreateWorkflow\" />
     <Folder Include="Feature\Workflow\Exceptions\" />
     <Folder Include="Feature\Workspace\" />
