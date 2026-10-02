@@ -32,6 +32,7 @@
     <Folder Include="Feature\Workflow\AddWorkflowStep\" />
     <Folder Include="Feature\Workflow\CreateWorkflow\" />
     <Folder Include="Feature\Workflow\Exceptions\" />
+    <Folder Include="Feature\Workflow\GetWorkflowDetail\" />
     <Folder Include="Feature\Workspace\" />
     <Folder Include="Feature\Workspace\AddMembers\" />
     <Folder Include="Feature\Workspace\CreateWorkspace\" />

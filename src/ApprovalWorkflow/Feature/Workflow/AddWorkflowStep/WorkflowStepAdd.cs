@@ -74,19 +74,28 @@ public class Handler(
             reason: "Workflow must be Draft"
         );
 
-        var validWorkspaceMember = await dbContext.WorkSpaceMember.FirstOrDefaultAsync(
+        var validCurrentUser = await dbContext.WorkSpaceMember.AnyAsync(
             t => t.WorkSpaceId == validWorkflow.WorkSpaceId
-            )
-            ?? throw new InvalidWorkflowCreationException(
+            &&
+            t.UserId == req.CurrentUserId
+            ,ct
+            );
+
+        if(!validCurrentUser) throw new InvalidWorkflowCreationException(
                 reason: "Can't find current member of this Workspace"
             );
 
-        if(validWorkspaceMember.UserId != req.CurrentUserId) throw new InvalidWorkflowCreationException(
-            reason: "User must belong in the current Workspace"
+        var validApprover = await dbContext.WorkSpaceMember.AnyAsync(
+            t => t.UserId == req.ApprovedUserId
+            &&
+            t.WorkSpaceId == validWorkflow.WorkSpaceId
+            ,ct
         );
-        else if(validWorkspaceMember.UserId != req.ApprovedUserId) throw new InvalidWorkflowCreationException(
+
+        if(!validApprover) throw new InvalidWorkflowCreationException(
             reason: "Approver must belong in the current Workspace"
-        );
+        ); 
+
 
         var maxStepOrder = await dbContext.WorkFlowSteps.Where(
             t => t.WorkFlowId == req.WorkflowId

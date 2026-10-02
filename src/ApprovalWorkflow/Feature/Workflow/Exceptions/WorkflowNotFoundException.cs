@@ -7,7 +7,7 @@ public class WorkflowNotFoundException : System.Exception
     public string Reason {get;}
 
     public WorkflowNotFoundException(string reason) : base(
-        message: "Workflow not found or not existed"
+        "Workflow Id is incorrecct"
     )
     {
         Reason = reason;
