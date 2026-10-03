@@ -26,7 +26,6 @@
     <Folder Include="Common\Extensions\" />
     <Folder Include="Feature\Auth\Exceptions\" />
     <Folder Include="Feature\Auth\Login\" />
-    <Folder Include="Feature\Workflow\" />
     <Folder Include="Feature\Workflow\ActivateWorkflow\" />
     <Folder Include="Feature\Workflow\AddWorkflowStep\" />
     <Folder Include="Feature\Workflow\CreateWorkflow\" />
