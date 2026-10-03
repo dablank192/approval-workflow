@@ -15,10 +15,6 @@ public record WorkflowDetailGetQuery(
     Guid UserId
 ) : IRequest<WorkflowDetailGetResult>;
 
-public record WorkflowDetailGetSubQuery(
-    Guid WorkflowId
-);
-
 public record WorkflowDetailGetResult(
     Guid? WorkflowId,
     Guid? WorkspaceId,
@@ -41,11 +37,12 @@ public class WorkflowDetailGet(
 ) : WorkflowApi
 
 {
-    [HttpGet("detail")]
-    public async Task<IActionResult> HandleAsync([FromRoute] WorkflowDetailGetSubQuery req)
+    [HttpGet("{workflowId:guid}/detail")]
+    [ProducesResponseType<ApiResponse<WorkflowDetailGetResult>>(statusCode: StatusCodes.Status200OK)]
+    public async Task<IActionResult> HandleAsync([FromRoute] Guid workflowId)
     {
         var result = await sender.Send(new WorkflowDetailGetQuery(
-            WorkflowId: req.WorkflowId,
+            WorkflowId: workflowId,
             UserId: User.GetCurrentUserId()
         ));
 

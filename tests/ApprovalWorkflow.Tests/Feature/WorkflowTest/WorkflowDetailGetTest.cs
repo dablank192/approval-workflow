@@ -1,0 +1,139 @@
+using System;
+using System.Net;
+using System.Net.Http.Json;
+using ApprovalWorkflow.Common.Api;
+using ApprovalWorkflow.Feature.Workflow.GetWorkflowDetail;
+using ApprovalWorkflow.Infrastructure.Authentication;
+using ApprovalWorkflow.Infrastructure.Persistence;
+using ApprovalWorkflow.Infrastructure.Persistence.Entities;
+using ApprovalWorkflow.Tests.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace ApprovalWorkflow.Tests.Feature.WorkflowTest;
+
+public class WorkflowDetailGetTest : IClassFixture<WebAppFactory>
+{
+    private readonly HttpClient _client;
+    private readonly WebAppFactory _factory;
+
+    public WorkflowDetailGetTest(WebAppFactory factory)
+    {
+        _client = factory.CreateClient();
+        _factory = factory;
+    }
+
+    [Fact]
+    public async Task ExecuteAsync()
+    {
+        //Given
+        await using var scope = _factory.Services.CreateAsyncScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var jwtGenerator = scope.ServiceProvider.GetRequiredService<IJwtgenerator>();
+
+        var newUser = new User
+        {
+            Email = "example@email.com",
+            Password = "test123",
+            DisplayName = "tester1"
+        };
+        dbContext.User.Add(newUser);
+
+        var newWp = new WorkSpace
+        {
+            Name = "test workspace",
+            CreatedBy = newUser.Id
+        };
+        dbContext.WorkSpace.Add(newWp);
+
+        await dbContext.SaveChangesAsync();
+
+        var accessToken = jwtGenerator.GenerateToken(userId: newUser.Id);
+
+                var newWpMember = new WorkSpaceMember
+        {
+            UserId = newUser.Id,
+            WorkSpaceId = newWp.Id
+        };
+        dbContext.WorkSpaceMember.Add(newWpMember);
+
+        var newWf = new WorkFlow
+        {
+            WorkSpaceId = newWp.Id,
+            Name = "testing",
+            Description = "test",
+            CreatedBy = newUser.Id
+        };
+        dbContext.WorkFlow.Add(newWf);
+        
+        await dbContext.SaveChangesAsync();
+
+        _client.DefaultRequestHeaders.Add(
+            name: "Cookie",
+            value: $"access_token={accessToken}"
+        );
+
+        var newWfStep = new WorkFlowSteps
+        {
+            WorkFlowId = newWf.Id,
+            Name = "Test wf",
+            StepOrder = 1,
+            ApprovedUserId = newUser.Id
+        };
+        dbContext.WorkFlowSteps.Add(newWfStep);
+
+        await dbContext.SaveChangesAsync();
+
+
+        //When
+        var response = await _client.GetAsync(
+            requestUri: $"/api/v1/workflow/{newWf.Id}/detail"
+        );
+
+
+        //Then
+        Assert.NotNull(response);
+
+        Assert.Equal(
+            expected: HttpStatusCode.OK,
+            actual: response.StatusCode
+        );
+
+        var responseData = await response.Content.ReadFromJsonAsync<ApiResponse<WorkflowDetailGetResult>>();
+
+        await using var testScope = _factory.Services.CreateAsyncScope();
+        var testDbContext = testScope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        var validWorkflow = await testDbContext.WorkFlow.FirstOrDefaultAsync(
+            t => t.Id == newWf.Id
+        );
+        var validWfStep = await testDbContext.WorkFlowSteps.FirstOrDefaultAsync(
+            t => t.Id == newWfStep.Id
+        );
+        
+        Assert.Equal(
+            expected: validWorkflow.Id,
+            actual: responseData.Data.WorkflowId
+        );
+
+        Assert.Equal(
+            expected: validWorkflow.WorkSpaceId,
+            actual: responseData.Data.WorkspaceId
+        );
+
+        Assert.Single(
+            collection: responseData.Data.Steps
+        );
+
+        Assert.Equal(
+            expected: validWfStep.Id,
+            actual: responseData.Data.Steps[0].WorkflowStepId
+        );
+
+        Assert.Equal(
+            expected: 1,
+            actual: responseData.Data.Steps[0].StepOrder
+        );
+        
+    }
+}
