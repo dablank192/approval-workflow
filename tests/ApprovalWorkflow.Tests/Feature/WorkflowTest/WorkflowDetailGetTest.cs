@@ -134,6 +134,6 @@ public class WorkflowDetailGetTest : IClassFixture<WebAppFactory>
             expected: 1,
             actual: responseData.Data.Steps[0].StepOrder
         );
-        
+
     }
 }

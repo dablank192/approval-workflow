@@ -1,6 +1,6 @@
 using System;
 
-namespace ApprovalWorkflow.Feature.Workflow.Exceptions;
+namespace ApprovalWorkflow.Common.Exceptions;
 
 public class WorkflowNotFoundException : System.Exception
 {

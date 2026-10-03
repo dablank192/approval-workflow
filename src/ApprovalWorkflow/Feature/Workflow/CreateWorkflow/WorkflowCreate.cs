@@ -73,15 +73,16 @@ public class Handler(
             reason: "Duplicate Workflow name"
         );
         
-        var validWf = await dbContext.WorkSpace.FirstOrDefaultAsync(
-            t => t.Id == req.WorkspaceId
+        var validWf = await dbContext.WorkSpaceMember.AnyAsync(
+            t => t.WorkSpaceId == req.WorkspaceId
             &&
-            t.User.Id == req.UserId
+            t.UserId == req.UserId
             ,ct
-        )?? throw new InvalidWorkflowCreationException(
-            reason: "User is not a member of this Workspace"
         );
 
+        if(!validWf) throw new InvalidWorkflowCreationException(
+            reason: "User is not a member of this Workspace"
+        );
 
         var newWf = new WorkFlow
         {

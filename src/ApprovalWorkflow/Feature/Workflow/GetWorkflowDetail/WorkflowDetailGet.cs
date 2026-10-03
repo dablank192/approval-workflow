@@ -1,5 +1,6 @@
 using System;
 using ApprovalWorkflow.Common.Api;
+using ApprovalWorkflow.Common.Exceptions;
 using ApprovalWorkflow.Common.Extensions;
 using ApprovalWorkflow.Feature.Workflow.Exceptions;
 using ApprovalWorkflow.Infrastructure.Persistence;
@@ -63,7 +64,7 @@ public class Handler(
     public async Task<WorkflowDetailGetResult> Handle(WorkflowDetailGetQuery req, CancellationToken ct)
     {
         var validWorkflow = await dbContext.WorkFlow.FindAsync(req.WorkflowId, ct)
-        ?? throw new WorkflowNotFoundException("Workflow Not Found");
+        ?? throw new WorkflowNotFoundException("Workflow Id Not Found");
 
         var validWorkspaceMember = await dbContext.WorkSpaceMember.FirstOrDefaultAsync(
             t => t.WorkSpaceId == validWorkflow.WorkSpaceId

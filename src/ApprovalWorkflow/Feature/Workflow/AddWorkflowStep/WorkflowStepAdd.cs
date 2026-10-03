@@ -1,5 +1,6 @@
 using System;
 using ApprovalWorkflow.Common.Api;
+using ApprovalWorkflow.Common.Exceptions;
 using ApprovalWorkflow.Common.Extensions;
 using ApprovalWorkflow.Feature.Workflow.Exceptions;
 using ApprovalWorkflow.Infrastructure.Persistence;

@@ -22,13 +22,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\" />
     <Folder Include="Common\Api\" />
-    <Folder Include="Common\Exceptions\" />
     <Folder Include="Common\Extensions\" />
     <Folder Include="Feature\Auth\Exceptions\" />
     <Folder Include="Feature\Auth\Login\" />
     <Folder Include="Feature\Workflow\" />
+    <Folder Include="Feature\Workflow\ActivateWorkflow\" />
     <Folder Include="Feature\Workflow\AddWorkflowStep\" />
     <Folder Include="Feature\Workflow\CreateWorkflow\" />
     <Folder Include="Feature\Workflow\Exceptions\" />

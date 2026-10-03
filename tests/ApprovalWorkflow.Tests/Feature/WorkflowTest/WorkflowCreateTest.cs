@@ -46,6 +46,14 @@ public class WorkflowCreateTest : IClassFixture<WebAppFactory>
         };
         dbContext.WorkSpace.Add(newWp);
 
+        var newWpMember = new WorkSpaceMember
+        {
+            UserId = newUser.Id,
+            WorkSpaceId = newWp.Id
+        };
+
+        dbContext.WorkSpaceMember.Add(newWpMember);
+
         await dbContext.SaveChangesAsync();
 
         var accessToken = jwtGenerator.GenerateToken(userId: newUser.Id);

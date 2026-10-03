@@ -55,6 +55,21 @@ public class GlobalExceptionHandler(
                 "Workflow not found"
             ),
 
+            UserNotInWorkspaceException => (
+                StatusCodes.Status400BadRequest,
+                "User not belong in the Workspace"
+            ),
+
+            InvalidWorkflowStatusException => (
+                StatusCodes.Status400BadRequest,
+                "Invalid Workflow status"
+            ),
+
+            InvalidWorkflowActivationException => (
+                StatusCodes.Status406NotAcceptable,
+                "Invalid Workflow Activation"
+            ),
+
             _ => (
                 StatusCodes.Status500InternalServerError,
                 "Unknown System Error"
