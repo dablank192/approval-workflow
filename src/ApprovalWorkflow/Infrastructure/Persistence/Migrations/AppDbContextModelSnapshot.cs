@@ -236,7 +236,8 @@ namespace ApprovalWorkflow.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("ApprovedUserId");
 
-                    b.HasIndex("WorkFlowId");
+                    b.HasIndex("WorkFlowId", "StepOrder")
+                        .IsUnique();
 
                     b.ToTable("WorkFlowSteps", (string)null);
                 });

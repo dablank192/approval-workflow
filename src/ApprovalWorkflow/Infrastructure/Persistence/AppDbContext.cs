@@ -15,7 +15,7 @@ public class AppDbContext : DbContext
     public DbSet<WorkFlowSteps> WorkFlowSteps {get; set;}
     public DbSet<Requests> Requests {get; set;}
     public DbSet<RequestApproval> RequestApproval {get; set;}
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

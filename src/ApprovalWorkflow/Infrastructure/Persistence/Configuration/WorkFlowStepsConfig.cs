@@ -12,6 +12,13 @@ public class WorkFlowStepsConfig : IEntityTypeConfiguration<WorkFlowSteps>
         builder.ToTable("WorkFlowSteps");
         builder.HasKey(t => t.Id);
 
+        builder.HasIndex(t => new
+        {
+            t.WorkFlowId,
+            t.StepOrder
+        })
+        .IsUnique();
+
         builder.Property(t => t.Name)
         .HasMaxLength(250);
         builder.Property(t => t.StepOrder)
