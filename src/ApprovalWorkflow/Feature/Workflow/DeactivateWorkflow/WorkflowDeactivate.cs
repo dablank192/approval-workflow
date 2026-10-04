@@ -70,7 +70,7 @@ public class Handler(
         );
 
         if(validWf.Status != WorkflowStatus.Active) throw new InvalidWorkflowStatusException(
-            reason: "Workflow status for activation must be in Draft"
+            reason: "Workflow status for deactivation must be in Active"
         );
 
         validWf.Status = WorkflowStatus.Inactive;
@@ -78,7 +78,7 @@ public class Handler(
 
 
         return new WorkflowDeactivateResult(
-            Message: "Success"
+            Message: "Workflow Deactivated"
         );
     }
 }

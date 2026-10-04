@@ -49,7 +49,7 @@ public class WorkflowActivateTest : IClassFixture<WebAppFactory>
 
         var accessToken = jwtGenerator.GenerateToken(userId: newUser.Id);
 
-                var newWpMember = new WorkSpaceMember
+        var newWpMember = new WorkSpaceMember
         {
             UserId = newUser.Id,
             WorkSpaceId = newWp.Id
