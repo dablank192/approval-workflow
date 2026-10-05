@@ -28,10 +28,10 @@ namespace ApprovalWorkflow.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("ActedAt")
+                    b.Property<DateTime?>("ActedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("ApprovalUserId")
+                    b.Property<Guid>("ApproverUserId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Comment")
@@ -57,12 +57,12 @@ namespace ApprovalWorkflow.Infrastructure.Persistence.Migrations
                         .HasMaxLength(150)
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("WorkFlowId")
+                    b.Property<Guid>("WorkFlowStepId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ApprovalUserId");
+                    b.HasIndex("ApproverUserId");
 
                     b.HasIndex("RequestId");
 
@@ -70,7 +70,7 @@ namespace ApprovalWorkflow.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("StepName");
 
-                    b.HasIndex("WorkFlowId");
+                    b.HasIndex("WorkFlowStepId");
 
                     b.ToTable("RequestApproval", (string)null);
                 });
@@ -81,7 +81,7 @@ namespace ApprovalWorkflow.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<DateTime>("CompletedAt")
+                    b.Property<DateTime?>("CompletedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("CreatedAt")
@@ -98,7 +98,7 @@ namespace ApprovalWorkflow.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<DateTime>("SubmittedAt")
+                    b.Property<DateTime?>("SubmittedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Title")
@@ -308,7 +308,7 @@ namespace ApprovalWorkflow.Infrastructure.Persistence.Migrations
                 {
                     b.HasOne("ApprovalWorkflow.Infrastructure.Persistence.Entities.User", "User")
                         .WithMany("RequestApproval")
-                        .HasForeignKey("ApprovalUserId")
+                        .HasForeignKey("ApproverUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -318,9 +318,9 @@ namespace ApprovalWorkflow.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ApprovalWorkflow.Infrastructure.Persistence.Entities.WorkFlow", "WorkFlow")
+                    b.HasOne("ApprovalWorkflow.Infrastructure.Persistence.Entities.WorkFlowSteps", "WorkFlowSteps")
                         .WithMany("RequestApproval")
-                        .HasForeignKey("WorkFlowId")
+                        .HasForeignKey("WorkFlowStepId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -328,7 +328,7 @@ namespace ApprovalWorkflow.Infrastructure.Persistence.Migrations
 
                     b.Navigation("User");
 
-                    b.Navigation("WorkFlow");
+                    b.Navigation("WorkFlowSteps");
                 });
 
             modelBuilder.Entity("ApprovalWorkflow.Infrastructure.Persistence.Entities.Requests", b =>
@@ -448,11 +448,14 @@ namespace ApprovalWorkflow.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("ApprovalWorkflow.Infrastructure.Persistence.Entities.WorkFlow", b =>
                 {
-                    b.Navigation("RequestApproval");
-
                     b.Navigation("Requests");
 
                     b.Navigation("WorkFlowSteps");
+                });
+
+            modelBuilder.Entity("ApprovalWorkflow.Infrastructure.Persistence.Entities.WorkFlowSteps", b =>
+                {
+                    b.Navigation("RequestApproval");
                 });
 
             modelBuilder.Entity("ApprovalWorkflow.Infrastructure.Persistence.Entities.WorkSpace", b =>

@@ -29,14 +29,14 @@ public class RequestApprovalConfig : IEntityTypeConfiguration<RequestApproval>
         .HasForeignKey(t => t.RequestId)
         .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(t => t.WorkFlow)
+        builder.HasOne(t => t.WorkFlowSteps)
         .WithMany(t => t.RequestApproval)
-        .HasForeignKey(t => t.WorkFlowId)
+        .HasForeignKey(t => t.WorkFlowStepId)
         .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(t => t.User)
         .WithMany(t => t.RequestApproval)
-        .HasForeignKey(t => t.ApprovalUserId)
+        .HasForeignKey(t => t.ApproverUserId)
         .OnDelete(DeleteBehavior.Restrict);
     }
 }

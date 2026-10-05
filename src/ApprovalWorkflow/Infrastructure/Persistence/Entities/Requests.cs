@@ -20,8 +20,8 @@ public class Requests
     public required string Title {get; set;}
     public string? Description {get; set;}
     public string Status {get; set;} 
-    public DateTime SubmittedAt {get; set;}
-    public DateTime CompletedAt {get; set;}
+    public DateTime? SubmittedAt {get; set;}
+    public DateTime? CompletedAt {get; set;}
     public DateTime CreatedAt {get; set;} = DateTime.UtcNow;
     public DateTime UpdatedAt {get; set;} = DateTime.UtcNow;
 

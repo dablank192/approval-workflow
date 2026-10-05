@@ -24,5 +24,4 @@ public class WorkFlow
     public List<WorkFlowSteps> WorkFlowSteps {get; set;}
     public List<Requests> Requests {get; set;}
     public User User {get; set;}
-    public List<RequestApproval> RequestApproval {get; set;}
 }

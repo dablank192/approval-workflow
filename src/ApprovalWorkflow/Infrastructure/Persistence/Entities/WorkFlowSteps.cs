@@ -12,6 +12,7 @@ public class WorkFlowSteps
     public DateTime CreatedAt {get; set;} = DateTime.UtcNow;
     public DateTime UpdatedAt {get; set;} = DateTime.UtcNow;
 
+    public List<RequestApproval> RequestApproval {get; set;}
     public WorkFlow WorkFlow {get; set;}
     public User User {get; set;}
 }
