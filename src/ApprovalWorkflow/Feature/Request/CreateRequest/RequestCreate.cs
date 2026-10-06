@@ -27,7 +27,10 @@ public record RequestCreateSubCommand(
     string Description
 );
 
-public record RequestCreateResult(string Message);
+public record RequestCreateResult(
+    Guid RequestId,
+    string Message
+);
 
 public class RequestCreate(
     ISender sender
@@ -110,6 +113,7 @@ public class Handler(
 
         
         return new RequestCreateResult(
+            RequestId: newRequest.Id,
             Message: "Request created successfully"
         );
     }
