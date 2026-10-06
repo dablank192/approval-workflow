@@ -1,6 +1,7 @@
 using System;
 using ApprovalWorkflow.Common.Exceptions;
 using ApprovalWorkflow.Feature.Auth.Exceptions;
+using ApprovalWorkflow.Feature.Request.Exceptions;
 using ApprovalWorkflow.Feature.Workflow.Exceptions;
 using ApprovalWorkflow.Feature.Workspace.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
@@ -68,6 +69,21 @@ public class GlobalExceptionHandler(
             InvalidWorkflowActivationException => (
                 StatusCodes.Status406NotAcceptable,
                 "Invalid Workflow Activation"
+            ),
+
+            InvalidRequestStatusException => (
+                StatusCodes.Status422UnprocessableEntity,
+                "Request status invalid"
+            ),
+            
+            RequestNotFoundException => (
+                StatusCodes.Status404NotFound,
+                "Request Not Found"
+            ),
+
+            WorkspaceNotFoundException => (
+                StatusCodes.Status404NotFound,
+                "Workspace not found"
             ),
 
             _ => (
