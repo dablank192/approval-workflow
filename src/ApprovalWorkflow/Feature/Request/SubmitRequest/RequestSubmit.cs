@@ -4,6 +4,7 @@ using ApprovalWorkflow.Common.Exceptions;
 using ApprovalWorkflow.Common.Extensions;
 using ApprovalWorkflow.Feature.Request.Exceptions;
 using ApprovalWorkflow.Feature.Workflow.Exceptions;
+using ApprovalWorkflow.Feature.Workspace.Exceptions;
 using ApprovalWorkflow.Infrastructure.Persistence;
 using ApprovalWorkflow.Infrastructure.Persistence.Entities;
 using MediatR;
@@ -78,12 +79,19 @@ public class Handler(
             reason: "Workspace Id from Request record is invalid or not found"
         );
 
-        var validWpMember = await dbContext.WorkSpaceMember.FirstOrDefaultAsync(
+        var validWpMember = await dbContext.WorkSpaceMember.AnyAsync(
             t => t.WorkSpaceId == validWp.Id
+            &&
+            t.UserId == req.UserId
             ,ct
         );
+        if(!validWpMember) throw new UserNotInWorkspaceException(
+            reason: "User is not a member of current Workspace"
+        );
 
-        var validWf = await dbContext.WorkFlow.FirstOrDefaultAsync(
+        var validWf = await dbContext.WorkFlow
+        .Include(t => t.WorkFlowSteps)
+        .FirstOrDefaultAsync(
             t => t.Id == validRequest.WorkFlowId
             &&
             t.WorkSpaceId == validWp.Id
@@ -97,11 +105,7 @@ public class Handler(
             reason: "Workflow status must be active"
         );
 
-        var totalWfStep = validWf.WorkFlowSteps.Where(
-            t => t.ApprovedUserId == validWpMember.UserId
-        )
-        .Select(t => t.StepOrder)
-        .Count();
+        var totalWfStep = validWf.WorkFlowSteps.Count;
 
         if (totalWfStep < 1) throw new InvalidWorkflowException(
             reason: "Workflow step minimum must be 1, in order for request to submit"
@@ -121,6 +125,10 @@ public class Handler(
 
             dbContext.RequestApproval.Add(approval);
         }
+
+        validRequest.Status = RequestStatus.Pending;
+        validRequest.SubmittedAt = DateTime.UtcNow;
+        validRequest.UpdatedAt = DateTime.UtcNow;
 
         await dbContext.SaveChangesAsync(ct);
 
