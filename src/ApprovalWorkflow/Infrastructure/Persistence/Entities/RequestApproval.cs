@@ -1,4 +1,5 @@
 using System;
+using ApprovalWorkflow.Feature.Workflow.AddWorkflowStep;
 
 namespace ApprovalWorkflow.Infrastructure.Persistence.Entities;
 
@@ -14,16 +15,16 @@ public class RequestApproval
 {
     public Guid Id {get; set;}
     public Guid RequestId {get; set;}
-    public Guid WorkFlowId {get; set;}
+    public Guid WorkFlowStepId {get; set;}
     public int StepOrder {get; set;}
     public required string StepName {get; set;}
-    public Guid ApprovalUserId {get; set;} //user id
+    public Guid ApproverUserId {get; set;} //user id
     public string Status {get; set;}
     public string? Comment {get; set;}
-    public DateTime ActedAt {get; set;} = DateTime.UtcNow;
+    public DateTime? ActedAt {get; set;}
     public DateTime CreatedAt {get; set;} = DateTime.UtcNow;
 
     public Requests Requests {get; set;}
-    public WorkFlow WorkFlow {get; set;}
+    public WorkFlowSteps WorkFlowSteps {get; set;}
     public User User {get; set;}
 }
