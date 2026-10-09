@@ -24,6 +24,9 @@
   <ItemGroup>
     <Folder Include="Common\Api\" />
     <Folder Include="Common\Extensions\" />
+    <Folder Include="Feature\Approval\" />
+    <Folder Include="Feature\Approval\Exceptions\" />
+    <Folder Include="Feature\Approval\GetApprovalInbox\" />
     <Folder Include="Feature\Auth\Exceptions\" />
     <Folder Include="Feature\Auth\Login\" />
     <Folder Include="Feature\Request\" />
