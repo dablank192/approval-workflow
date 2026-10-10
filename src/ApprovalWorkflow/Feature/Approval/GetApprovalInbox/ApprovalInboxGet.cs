@@ -55,37 +55,43 @@ public class Handler(
 {
     public async Task<List<ApprovalInboxGetResult>> Handle(ApprovalInboxGetQuery req, CancellationToken ct)
     {
-        var reqApproval = await dbContext.RequestApproval
-        .Include(t => t.Requests)
-        .FirstOrDefaultAsync(
-            t => t.ApproverUserId == req.UserId
-            ,ct
+        var approvalInbox = await dbContext.RequestApproval
+        .AsNoTracking()
+        .Where(
+            t => t.Status == ApprovalStatus.Pending
+            &&
+            t.Requests.Status == RequestStatus.Pending
+
+            //Check current step
+            && !dbContext.RequestApproval.Any(
+                u => u.RequestId == t.RequestId
+                &&
+                u.Status == ApprovalStatus.Pending
+                &&
+                u.StepOrder < t.StepOrder
+            )
+
+            //Check workspace membership
+            && dbContext.WorkSpaceMember.Any(
+                mb => mb.UserId == req.UserId
+                &&
+                mb.WorkSpaceId == t.Requests.WorkSpaceId
+                &&
+                mb.Status == MemberStatus.Active
+            )
         )
-        ?? throw new ApproverNotFoundException(
-            reason: "Approver's UserId not found or not existed"
-        );
+        .Select(t => new ApprovalInboxGetResult(
+            RequestApprovalId: t.Id,
+            RequestId: t.RequestId,
+            WorkspaceId: t.Requests.WorkSpaceId,
+            RequestTitle: t.Requests.Title,
+            RequestBy: t.Requests.CreatedBy,
+            StepName: t.StepName,
+            StepOrder: t.StepOrder,
+            SubmittedAt: t.Requests.SubmittedAt
+        ))
+        .ToListAsync(ct);
 
-        if(reqApproval.Status != ApprovalStatus.Pending) throw new InvalidReqApprovalStatusException(
-            reason: "Current user Approval Status is invalid"
-        );
-
-        if(reqApproval.Requests.Status != RequestStatus.Pending) throw new InvalidRequestStatusException(
-            reason: "Current ticket's status must be Pending"
-        );
-
-
-        var wfMember = await dbContext.WorkSpaceMember.FirstOrDefaultAsync(
-            t => t.UserId == req.UserId
-            ,ct
-        ) ?? throw new UserNotInWorkspaceException(
-            reason: "User not a member of current Workspace"
-        );
-
-        var validWf = await dbContext.WorkFlow.FirstOrDefaultAsync(
-            t => t.Id == reqApproval.Requests.WorkFlowId
-            ,ct
-        ) ?? throw new InvalidWorkflowException(
-            reason: "Workflow must be existed/active in current Workspace"
-        );
+        return approvalInbox;
     }
 }
