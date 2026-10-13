@@ -32,7 +32,8 @@ public class ApprovalInboxGet(
     ISender sender
 ) : ApprovalApi
 {
-    [HttpGet("{userId}/inbox")]
+    [HttpGet("inbox")]
+    [ProducesResponseType<ApiResponse<List<ApprovalInboxGetResult>>>(statusCode: StatusCodes.Status200OK)]
     public async Task<IActionResult> HandleAsync()
     {
         var result = await sender.Send(new ApprovalInboxGetQuery(
@@ -61,6 +62,8 @@ public class Handler(
             t => t.Status == ApprovalStatus.Pending
             &&
             t.Requests.Status == RequestStatus.Pending
+            &&
+            t.ApproverUserId == req.UserId
 
             //Check current step
             && !dbContext.RequestApproval.Any(
