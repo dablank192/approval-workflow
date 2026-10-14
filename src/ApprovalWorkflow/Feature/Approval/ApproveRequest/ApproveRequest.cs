@@ -53,7 +53,8 @@ public class Handler(
     public async Task<ApproveRequestResult> Handle(ApproveRequestCommand req, CancellationToken ct)
     {        
         //Check if Request Id and Request approval id existed
-        var validRequestApr = await dbContext.RequestApproval.FirstOrDefaultAsync(
+        var validRequestApr = await dbContext.RequestApproval
+        .FirstOrDefaultAsync(
             t => t.Id == req.RequestApprovalId
             &&
             dbContext.Requests.Any(
@@ -74,7 +75,9 @@ public class Handler(
 
 
         //Check if Request existed and is Pending
-        var validRequest = await dbContext.Requests.FirstOrDefaultAsync(
+        var validRequest = await dbContext.Requests
+        .Include(t => t.RequestApproval)
+        .FirstOrDefaultAsync(
             t => t.Id == validRequestApr.RequestId
             &&
             t.Status == RequestStatus.Pending
@@ -98,7 +101,9 @@ public class Handler(
         );
 
         var validWpMember = await dbContext.WorkSpaceMember.AnyAsync(
-            t => t.UserId == req.UserId
+            t => t.WorkSpaceId == validRequest.WorkSpaceId
+            &&
+            t.UserId == req.UserId
             &&
             t.Status == MemberStatus.Active
             ,ct
@@ -109,6 +114,7 @@ public class Handler(
 
 
         validRequestApr.Status = ApprovalStatus.Approved;
+        validRequestApr.ActedAt = DateTime.UtcNow;
 
         var isAllApproved = validRequest.RequestApproval
         .All(
