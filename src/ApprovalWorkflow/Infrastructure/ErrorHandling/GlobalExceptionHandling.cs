@@ -97,6 +97,16 @@ public class GlobalExceptionHandler(
                 "Approval Status is invalid"
             ),
 
+            InvalidApproverException => (
+                StatusCodes.Status404NotFound,
+                "Approver not found"
+            ),
+
+            InvalidStepOrderException => (
+                StatusCodes.Status409Conflict,
+                "Step's Order invalid"
+            ),
+
             _ => (
                 StatusCodes.Status500InternalServerError,
                 "Unknown System Error"
