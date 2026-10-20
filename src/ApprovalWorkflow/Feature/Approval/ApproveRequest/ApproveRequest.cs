@@ -14,7 +14,8 @@ namespace ApprovalWorkflow.Feature.Approval.ApproveRequest;
 
 public record ApproveRequestCommand(
     Guid RequestApprovalId,
-    Guid UserId
+    Guid UserId,
+    string? Comment = null
 ) : IRequest<ApproveRequestResult>;
 
 public record ApproveRequestResult(

@@ -28,6 +28,7 @@
     <Folder Include="Feature\Approval\ApproveRequest\" />
     <Folder Include="Feature\Approval\Exceptions\" />
     <Folder Include="Feature\Approval\GetApprovalInbox\" />
+    <Folder Include="Feature\Approval\RejectRequest\" />
     <Folder Include="Feature\Auth\Exceptions\" />
     <Folder Include="Feature\Auth\Login\" />
     <Folder Include="Feature\Request\" />
