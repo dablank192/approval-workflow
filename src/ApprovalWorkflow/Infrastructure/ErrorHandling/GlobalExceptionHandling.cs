@@ -1,5 +1,6 @@
 using System;
 using ApprovalWorkflow.Common.Exceptions;
+using ApprovalWorkflow.Feature.Approval.Exceptions;
 using ApprovalWorkflow.Feature.Auth.Exceptions;
 using ApprovalWorkflow.Feature.Request.Exceptions;
 using ApprovalWorkflow.Feature.Workflow.Exceptions;
@@ -84,6 +85,26 @@ public class GlobalExceptionHandler(
             WorkspaceNotFoundException => (
                 StatusCodes.Status404NotFound,
                 "Workspace not found"
+            ),
+
+            ApproverNotFoundException => (
+                StatusCodes.Status404NotFound,
+                "Approver not found"
+            ),
+            
+            InvalidReqApprovalStatusException => (
+                StatusCodes.Status400BadRequest,
+                "Approval Status is invalid"
+            ),
+
+            InvalidApproverException => (
+                StatusCodes.Status404NotFound,
+                "Approver not found"
+            ),
+
+            InvalidStepOrderException => (
+                StatusCodes.Status409Conflict,
+                "Step's Order invalid"
             ),
 
             _ => (

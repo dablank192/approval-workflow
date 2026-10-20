@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <Folder Include="Feature\" />
+    <Folder Include="Feature\Approval\" />
     <Folder Include="Feature\AuthTest\" />
     <Folder Include="Feature\RequestTest\" />
     <Folder Include="Feature\WorkflowTest\" />
