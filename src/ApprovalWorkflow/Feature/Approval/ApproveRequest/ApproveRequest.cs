@@ -18,6 +18,10 @@ public record ApproveRequestCommand(
     string? Comment = null
 ) : IRequest<ApproveRequestResult>;
 
+public record ApproveRequestSubCommand(
+    string? Comment = null
+);
+
 public record ApproveRequestResult(
     Guid RequestId,
     Guid RequestApprovalId,
@@ -30,10 +34,11 @@ public class ApproveRequest(
 {
     [HttpPost("{reqApprId:guid}/approve")]
     [ProducesResponseType<ApproveRequestResult>(statusCode: StatusCodes.Status200OK)]
-    public async Task<IActionResult> HandleAsync(Guid reqApprId)
+    public async Task<IActionResult> HandleAsync([FromRoute]Guid reqApprId, [FromBody] ApproveRequestSubCommand body)
     {
         var result = await sender.Send(new ApproveRequestCommand(
             RequestApprovalId: reqApprId,
+            Comment: body.Comment,
             UserId: User.GetCurrentUserId()
         ));
 
@@ -129,7 +134,7 @@ public class Handler(
         }
 
         validRequest.UpdatedAt = DateTime.UtcNow;
-        
+
         validRequestApr.Comment = req.Comment;
 
         await dbContext.SaveChangesAsync(ct);
