@@ -129,6 +129,8 @@ public class Handler(
         }
 
         validRequest.UpdatedAt = DateTime.UtcNow;
+        
+        validRequestApr.Comment = req.Comment;
 
         await dbContext.SaveChangesAsync(ct);
 

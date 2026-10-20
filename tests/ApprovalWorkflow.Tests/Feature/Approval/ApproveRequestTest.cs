@@ -147,5 +147,10 @@ public class ApproveRequestTest : IClassFixture<WebAppFactory>
             expected: testReqApr.RequestId,
             actual: responseData.Data.RequestId
         );
+
+        Assert.Equal(
+            expected: ApprovalStatus.Approved,
+            actual: testReqApr.Status
+        );
     }
 }

@@ -139,6 +139,7 @@ public class RejectRequestTest : IClassFixture<WebAppFactory>
         var testDb = testScope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var testReqApr = await testDb.RequestApproval
+        .Include(t => t.Requests)
         .FirstOrDefaultAsync(
             t => t.Id == newRequestApr.Id
         );
@@ -151,6 +152,16 @@ public class RejectRequestTest : IClassFixture<WebAppFactory>
         Assert.Equal(
             expected: testReqApr.RequestId,
             actual: responseData.Data.RequestId
+        );
+
+        Assert.Equal(
+            expected: ApprovalStatus.Rejected,
+            actual: testReqApr.Status
+        );
+
+        Assert.Equal(
+            expected: RequestStatus.Rejected,
+            actual: testReqApr.Requests.Status
         );
     }
 }

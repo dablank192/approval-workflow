@@ -122,9 +122,11 @@ public class Handler(
 
         validRequestApr.Status = ApprovalStatus.Rejected;
         validRequestApr.ActedAt = DateTime.UtcNow;
-        validRequest.Status = RequestStatus.Rejected;
-        validRequest.CompletedAt = DateTime.UtcNow;
         validRequestApr.Comment = req.Comment;
+
+        validRequest.Status = RequestStatus.Rejected;
+        validRequest.UpdatedAt = DateTime.UtcNow;
+        validRequest.CompletedAt = DateTime.UtcNow;
 
         await dbContext.SaveChangesAsync(ct);
 
