@@ -98,6 +98,35 @@ public class Handler(
             reason: "User must be an Active Workspace member and Request must belong in a Workspace"
         );
 
-        //need to implement api response
+        var apiResponse = await dbContext.Requests
+        .Where(t => t.Id == req.RequestId)
+        .Select(
+            t => new RequestDetailGetResult(
+                RequestId: t.Id,
+                WorkspaceId: t.WorkSpaceId,
+                WorkflowId: t.WorkFlowId,
+                CreatedBy: t.CreatedBy,
+                Title: t.Title,
+                Description: t.Description,
+                Status: t.Status,
+                SubmittedAt: t.SubmittedAt,
+                CompletedAt: t.CompletedAt,
+                ApprovalHistories: t.RequestApproval.Select(u => new ApprovalHistory(
+                    RequestApprovalId: u.Id,
+                    StepOrder: u.StepOrder,
+                    StepName: u.StepName,
+                    ApproverUserId: u.ApproverUserId,
+                    Status: u.Status,
+                    Comment: u.Comment,
+                    ActedAt: u.ActedAt
+                ))
+                .ToList()
+            )
+        )
+        .FirstOrDefaultAsync(ct);
+
+
+        return apiResponse;
+        //uncertain query logic, need further validation
     }
 }
