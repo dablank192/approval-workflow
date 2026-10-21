@@ -69,13 +69,21 @@ public class Handler(
     public async Task<RequestDetailGetResult> Handle(RequestDetailGetQuery req, CancellationToken ct)
     {
         var validRequestApr = await dbContext.RequestApproval
+        .Include(t => t.Requests)
         .FirstOrDefaultAsync(
             t => t.RequestId == req.RequestId
+            &&
+            t.ApproverUserId == req.CurrentUserId
             ,ct
         )
         ?? throw new RequestNotFoundException(
             reason: "Request's Id not found"
+            );
+
+        if(validRequestApr.Requests.CreatedBy != req.CurrentUserId) throw new InvalidOwnerOrApproverException(
+            reason: "Only Request's owner or Request's approver can view the Request Detail"
         );
+
 
         //check whether user is a request owner or approver 
         if(!((validRequestApr.Requests.CreatedBy == req.CurrentUserId)
@@ -86,15 +94,16 @@ public class Handler(
         );
 
         var validWpMb = await dbContext.WorkSpaceMember
-        .FirstOrDefaultAsync(
-            t => t.UserId == validRequestApr.Requests.CreatedBy
+        .AnyAsync(
+            t => t.UserId == req.CurrentUserId
             &&
             t.Status == MemberStatus.Active
             &&
             t.WorkSpaceId == validRequestApr.Requests.WorkSpaceId
             ,ct
-        )
-        ?? throw new InvalidRequestAccessException(
+        );
+
+        if(!validWpMb) throw new InvalidRequestAccessException(
             reason: "User must be an Active Workspace member and Request must belong in a Workspace"
         );
 
