@@ -44,7 +44,7 @@ public class RequestDetailGet(
 ) : RequestApi
 {
     [HttpGet("{requestId:guid}/detail")]
-    [ProducesResponseType<RequestDetailGetResult>(statusCode: StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiResponse<RequestDetailGetResult>>(statusCode: StatusCodes.Status200OK)]
     public async Task<IActionResult> HandleAsync(Guid requestId)
     {
         var result = await sender.Send(new RequestDetailGetQuery(

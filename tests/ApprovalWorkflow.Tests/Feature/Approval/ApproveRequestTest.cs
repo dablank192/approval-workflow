@@ -114,9 +114,9 @@ public class ApproveRequestTest : IClassFixture<WebAppFactory>
 
         
         //When
-        var response = await _client.PostAsync(
+        var response = await _client.PostAsJsonAsync(
             requestUri: $"/api/v1/approval/{newRequestApr.Id}/approve",
-            content: null
+            value: new ApproveRequestSubCommand(Comment: "")
         );
 
 
