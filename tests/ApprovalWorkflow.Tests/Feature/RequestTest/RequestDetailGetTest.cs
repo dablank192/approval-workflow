@@ -91,11 +91,11 @@ public class RequestDetailGetTest : IClassFixture<WebAppFactory>
         };
         dbContext.WorkFlow.Add(newWf);
 
-        var accessToken = jwtGenerator.GenerateToken(userId: newUser.Id);
-        _client.DefaultRequestHeaders.Add(
-            name: "Cookie",
-            value: $"access_token={accessToken}"
-        );
+        var userAccessToken = jwtGenerator.GenerateToken(userId: newUser.Id);
+
+        var user2AccessToken = jwtGenerator.GenerateToken(userId: newUser2.Id);
+
+        var user3AccessToken = jwtGenerator.GenerateToken(userId: newUser3.Id);
 
         var newWfStep = new WorkFlowSteps
         {
@@ -132,64 +132,84 @@ public class RequestDetailGetTest : IClassFixture<WebAppFactory>
             WorkFlowStepId = newWfStep.Id,
             StepOrder = newWfStep.StepOrder,
             StepName = newWfStep.Name,
-            ApproverUserId = newUser.Id,
+            ApproverUserId = newUser2.Id,
             Status = ApprovalStatus.Pending
         };
 
         var newRequestApr2 = new RequestApproval
         {
             RequestId = newRequest.Id,
-            WorkFlowStepId = newWfStep.Id,
-            StepOrder = newWfStep.StepOrder,
-            StepName = newWfStep.Name,
-            ApproverUserId = newUser2.Id,
+            WorkFlowStepId = newWfStep2.Id,
+            StepOrder = newWfStep2.StepOrder,
+            StepName = newWfStep2.Name,
+            ApproverUserId = newUser3.Id,
             Status = ApprovalStatus.Pending
         };
 
-        dbContext.RequestApproval.Add(newRequestApr);
-        dbContext.RequestApproval.Add(newRequestApr2);
+        dbContext.RequestApproval.AddRange(newRequestApr, newRequestApr2);
 
         await dbContext.SaveChangesAsync();
 
 
         //When
-        var response = await _client.GetAsync(
-            requestUri: $"/api/v1/request/{newRequest.Id}/detail"
-        );
+        // var response = await _client.GetAsync(
+        //     requestUri: $"/api/v1/request/{newRequest.Id}/detail"
+        // );
 
 
         //Then
-        Assert.NotNull(response);
+        var tokens = new List<string>
+        {
+            userAccessToken,
+            user2AccessToken,
+            user3AccessToken
+        };
+
+        foreach(var token in tokens)
+        {
+            using var request = new HttpRequestMessage(
+                method: HttpMethod.Get,
+                requestUri: $"/api/v1/request/{newRequest.Id}/detail"
+            );
+
+            request.Headers.Add(
+                name: "Cookie",
+                value: $"access_token={token}"
+            );
+
+            using var response = await _client.SendAsync(request);
+
+             Assert.NotNull(response);
         
-        Assert.Equal(
-            expected: HttpStatusCode.OK,
-            actual: response.StatusCode
-        );
+            Assert.Equal(
+                expected: HttpStatusCode.OK,
+                actual: response.StatusCode
+            );
 
-        var responseData = await response.Content.ReadFromJsonAsync<ApiResponse<RequestDetailGetResult>>();
+            var responseData = await response.Content.ReadFromJsonAsync<ApiResponse<RequestDetailGetResult>>();
 
-        await using var testScope = _factory.Services.CreateAsyncScope();
-        var testDb = testScope.ServiceProvider.GetRequiredService<AppDbContext>();
+            await using var testScope = _factory.Services.CreateAsyncScope();
+            var testDb = testScope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        var validReq = await testDb.Requests.FirstOrDefaultAsync(
-            t => t.Id == newRequest.Id
-        );
-
-        Assert.Equal(
-            expected: validReq.Id,
-            actual: responseData.Data.RequestId
-        );
-        Assert.Equal(
-            expected: validReq.WorkFlowId,
-            actual: responseData.Data.WorkflowId
-        );
-        Assert.Equal(
-            expected: validReq.WorkSpaceId,
-            actual: responseData.Data.WorkspaceId
-        );
-        Assert.Equal(
-            expected: validReq.CreatedBy,
-            actual: responseData.Data.CreatedBy
-        );
+            var validReq = await testDb.Requests.FirstOrDefaultAsync(
+                t => t.Id == newRequest.Id
+            );
+            Assert.Equal(
+                expected: validReq.Id,
+                actual: responseData.Data.RequestId
+            );
+            Assert.Equal(
+                expected: validReq.WorkFlowId,
+                actual: responseData.Data.WorkflowId
+            );
+            Assert.Equal(
+                expected: validReq.WorkSpaceId,
+                actual: responseData.Data.WorkspaceId
+            );
+            Assert.Equal(
+                expected: validReq.CreatedBy,
+                actual: responseData.Data.CreatedBy
+            );
+        }
     }
 }

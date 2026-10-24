@@ -91,10 +91,10 @@ public class Handler(
             reason: "User must be an Active Workspace member and Request must belong in a Workspace"
         );
 
-        
+
         //check whether user is a request owner or approver 
         if(!((validRequest.CreatedBy == req.CurrentUserId) // check if user is a creator
-        &&
+        ||
         await dbContext.RequestApproval.AnyAsync( // check if user is a approver
             t => t.RequestId == validRequest.Id
             &&
