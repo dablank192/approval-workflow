@@ -72,6 +72,8 @@ public class Handler(
                 u => u.WorkSpaceId == t.WorkSpaceId
                 &&
                 u.UserId == req.CurrentUserId
+                &&
+                u.Status == MemberStatus.Active
             )
         );
 

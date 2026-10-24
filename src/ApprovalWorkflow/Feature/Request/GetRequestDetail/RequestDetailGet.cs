@@ -68,35 +68,14 @@ public class Handler(
 {
     public async Task<RequestDetailGetResult> Handle(RequestDetailGetQuery req, CancellationToken ct)
     {
-        var validRequestApr = await dbContext.RequestApproval
-        .Include(t => t.Requests)
+        var validRequest = await dbContext.Requests
         .FirstOrDefaultAsync(
-            t => t.RequestId == req.RequestId
-            &&
-            t.ApproverUserId == req.CurrentUserId
-            &&
-            t.Status != RequestStatus.Draft
+            t => t.Id == req.RequestId
             ,ct
         )
         ?? throw new RequestNotFoundException(
             reason: "Request's Id not found"
             );
-
-        if(!(validRequestApr.Requests.CreatedBy == req.CurrentUserId
-            ||
-            validRequestApr.ApproverUserId == req.CurrentUserId)
-        ) throw new InvalidOwnerOrApproverException(
-            reason: "Only Request's owner or Request's approver can view the Request Detail"
-        );
-
-
-        //check whether user is a request owner or approver 
-        if(!((validRequestApr.Requests.CreatedBy == req.CurrentUserId)
-        ||
-        validRequestApr.ApproverUserId == req.CurrentUserId)
-            ) throw new InvalidOwnerOrApproverException(
-            reason: "Only Request's owner or Request's approver can view the Request Detail"
-        );
 
         var validWpMb = await dbContext.WorkSpaceMember
         .AnyAsync(
@@ -104,13 +83,28 @@ public class Handler(
             &&
             t.Status == MemberStatus.Active
             &&
-            t.WorkSpaceId == validRequestApr.Requests.WorkSpaceId
+            t.WorkSpaceId == validRequest.WorkSpaceId
             ,ct
         );
 
         if(!validWpMb) throw new InvalidRequestAccessException(
             reason: "User must be an Active Workspace member and Request must belong in a Workspace"
         );
+
+        
+        //check whether user is a request owner or approver 
+        if(!((validRequest.CreatedBy == req.CurrentUserId) // check if user is a creator
+        &&
+        await dbContext.RequestApproval.AnyAsync( // check if user is a approver
+            t => t.RequestId == validRequest.Id
+            &&
+            t.ApproverUserId == req.CurrentUserId
+            ,ct
+        ))
+            ) throw new InvalidOwnerOrApproverException(
+            reason: "Only Request's owner or Request's approver can view the Request Detail"
+        );
+
 
         var apiResponse = await dbContext.Requests
         .Where(t => t.Id == req.RequestId)

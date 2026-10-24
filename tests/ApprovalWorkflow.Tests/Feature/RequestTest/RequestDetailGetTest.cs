@@ -38,6 +38,22 @@ public class RequestDetailGetTest : IClassFixture<WebAppFactory>
         };
         dbContext.User.Add(newUser);
 
+        var newUser2 = new User
+        {
+            Email = "example1@email.com",
+            Password = "test123",
+            DisplayName = "tester2"
+        };
+        dbContext.User.Add(newUser2);
+
+        var newUser3 = new User
+        {
+            Email = "example2@email.com",
+            Password = "test123",
+            DisplayName = "tester2"
+        };
+        dbContext.User.Add(newUser3);
+
         var newWp = new WorkSpace
         {
             Name = "test workspace",
@@ -47,14 +63,23 @@ public class RequestDetailGetTest : IClassFixture<WebAppFactory>
 
         await dbContext.SaveChangesAsync();
 
-        var accessToken = jwtGenerator.GenerateToken(userId: newUser.Id);
 
         var newWpMember = new WorkSpaceMember
         {
             UserId = newUser.Id,
             WorkSpaceId = newWp.Id
         };
-        dbContext.WorkSpaceMember.Add(newWpMember);
+        var newWpMember2 = new WorkSpaceMember
+        {
+            UserId = newUser2.Id,
+            WorkSpaceId = newWp.Id
+        };
+        var newWpMember3 = new WorkSpaceMember
+        {
+            UserId = newUser3.Id,
+            WorkSpaceId = newWp.Id
+        };
+        dbContext.WorkSpaceMember.AddRange(newWpMember, newWpMember2, newWpMember3);
 
         var newWf = new WorkFlow
         {
@@ -66,6 +91,7 @@ public class RequestDetailGetTest : IClassFixture<WebAppFactory>
         };
         dbContext.WorkFlow.Add(newWf);
 
+        var accessToken = jwtGenerator.GenerateToken(userId: newUser.Id);
         _client.DefaultRequestHeaders.Add(
             name: "Cookie",
             value: $"access_token={accessToken}"
@@ -76,7 +102,7 @@ public class RequestDetailGetTest : IClassFixture<WebAppFactory>
             WorkFlowId = newWf.Id,
             Name = "Test wf",
             StepOrder = 1,
-            ApprovedUserId = newUser.Id
+            ApprovedUserId = newUser2.Id
         };
 
         var newWfStep2 = new WorkFlowSteps
@@ -84,8 +110,9 @@ public class RequestDetailGetTest : IClassFixture<WebAppFactory>
             WorkFlowId = newWf.Id,
             Name = "Test wf",
             StepOrder = 2,
-            ApprovedUserId = newUser.Id
+            ApprovedUserId = newUser3.Id
         };
+
         dbContext.WorkFlowSteps.AddRange(newWfStep, newWfStep2);
 
         var newRequest = new Requests
@@ -108,7 +135,19 @@ public class RequestDetailGetTest : IClassFixture<WebAppFactory>
             ApproverUserId = newUser.Id,
             Status = ApprovalStatus.Pending
         };
+
+        var newRequestApr2 = new RequestApproval
+        {
+            RequestId = newRequest.Id,
+            WorkFlowStepId = newWfStep.Id,
+            StepOrder = newWfStep.StepOrder,
+            StepName = newWfStep.Name,
+            ApproverUserId = newUser2.Id,
+            Status = ApprovalStatus.Pending
+        };
+
         dbContext.RequestApproval.Add(newRequestApr);
+        dbContext.RequestApproval.Add(newRequestApr2);
 
         await dbContext.SaveChangesAsync();
 
