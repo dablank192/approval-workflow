@@ -34,6 +34,8 @@
     <Folder Include="Feature\Request\" />
     <Folder Include="Feature\Request\CreateRequest\" />
     <Folder Include="Feature\Request\Exceptions\" />
+    <Folder Include="Feature\Request\GetRequestDetail\" />
+    <Folder Include="Feature\Request\GetRequest\" />
     <Folder Include="Feature\Request\SubmitRequest\" />
     <Folder Include="Feature\Workflow\ActivateWorkflow\" />
     <Folder Include="Feature\Workflow\AddWorkflowStep\" />

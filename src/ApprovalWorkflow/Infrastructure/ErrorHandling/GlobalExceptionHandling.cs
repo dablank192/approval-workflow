@@ -107,6 +107,16 @@ public class GlobalExceptionHandler(
                 "Step's Order invalid"
             ),
 
+            InvalidOwnerOrApproverException => (
+                StatusCodes.Status403Forbidden,
+                "Request's Owner Invalid"
+            ),
+
+            InvalidRequestAccessException => (
+                StatusCodes.Status403Forbidden,
+                "Invalid Request access"
+            ),
+
             _ => (
                 StatusCodes.Status500InternalServerError,
                 "Unknown System Error"
