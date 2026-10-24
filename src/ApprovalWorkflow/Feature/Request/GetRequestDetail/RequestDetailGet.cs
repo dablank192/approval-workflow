@@ -74,13 +74,18 @@ public class Handler(
             t => t.RequestId == req.RequestId
             &&
             t.ApproverUserId == req.CurrentUserId
+            &&
+            t.Status != RequestStatus.Draft
             ,ct
         )
         ?? throw new RequestNotFoundException(
             reason: "Request's Id not found"
             );
 
-        if(validRequestApr.Requests.CreatedBy != req.CurrentUserId) throw new InvalidOwnerOrApproverException(
+        if(!(validRequestApr.Requests.CreatedBy == req.CurrentUserId
+            ||
+            validRequestApr.ApproverUserId == req.CurrentUserId)
+        ) throw new InvalidOwnerOrApproverException(
             reason: "Only Request's owner or Request's approver can view the Request Detail"
         );
 
@@ -120,7 +125,9 @@ public class Handler(
                 Status: t.Status,
                 SubmittedAt: t.SubmittedAt,
                 CompletedAt: t.CompletedAt,
-                ApprovalHistories: t.RequestApproval.Select(u => new ApprovalHistory(
+                ApprovalHistories: t.RequestApproval
+                .OrderBy(u => u.StepOrder)
+                .Select(u => new ApprovalHistory(
                     RequestApprovalId: u.Id,
                     StepOrder: u.StepOrder,
                     StepName: u.StepName,
@@ -136,6 +143,5 @@ public class Handler(
 
 
         return apiResponse;
-        //uncertain query logic, need further validation
     }
 }

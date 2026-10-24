@@ -3,6 +3,7 @@ using ApprovalWorkflow.Common.Api;
 using ApprovalWorkflow.Common.Extensions;
 using ApprovalWorkflow.Feature.Request.Exceptions;
 using ApprovalWorkflow.Infrastructure.Persistence;
+using ApprovalWorkflow.Infrastructure.Persistence.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -50,27 +51,33 @@ public class Handler(
 {
     public async Task<List<RequestGetResult>> Handle (RequestGetQuery req, CancellationToken ct)
     {
-        var validRequest = await dbContext.Requests
-        .FirstOrDefaultAsync(
-            t => t.CreatedBy == req.CurrentUserId
+        // workspace member is valid or not
+        var validWpMember = await dbContext.WorkSpaceMember.AnyAsync(
+            t => t.UserId == req.CurrentUserId
+            &&
+            t.Status == MemberStatus.Active
             ,ct
         );
-
-        var validWpMember = await dbContext.WorkSpaceMember.FirstOrDefaultAsync(
-            t => t.WorkSpaceId == validRequest.WorkSpaceId
-            &&
-            t.UserId == req.CurrentUserId
-            ,ct
-        )
-        ?? throw new InvalidOwnerOrApproverException(
+        if(!validWpMember) throw new InvalidOwnerOrApproverException(
             reason: "Both Request and User must belong to the same Workspace"
         );
 
-        var response = await dbContext.Requests.Where(
+
+        //check if user's request belong to user and is existed at any workspace at all
+        var validRequest = dbContext.Requests
+        .Where(
             t => t.CreatedBy == req.CurrentUserId
             &&
-            t.WorkSpaceId == validWpMember.WorkSpaceId
-        )
+            dbContext.WorkSpaceMember.Any(
+                u => u.WorkSpaceId == t.WorkSpaceId
+                &&
+                u.UserId == req.CurrentUserId
+            )
+        );
+
+
+        var response = await validRequest
+        .OrderByDescending(t => t.CreatedAt)
         .Select(t => new RequestGetResult(
             RequestId: t.Id,
             WorkspaceId: t.WorkSpaceId,
