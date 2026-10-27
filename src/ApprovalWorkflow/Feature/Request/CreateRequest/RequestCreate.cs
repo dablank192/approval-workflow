@@ -79,6 +79,8 @@ public class Handler(
             t => t.UserId == req.CreatedBy
             &&
             t.WorkSpaceId == req.WorkspaceId
+            &&
+            t.Status == MemberStatus.Active
             ,ct
         );
         if(!validWpMember) throw new UserNotInWorkspaceException(

@@ -70,6 +70,8 @@ public class Handler(
             t => t.WorkSpaceId == validWorkflow.WorkSpaceId
             &&
             t.UserId == req.UserId
+            &&
+            t.Status == MemberStatus.Active
             ,ct
         )
         ?? throw new InvalidWorkflowException(reason: "User is not belong to the current Workspace");
