@@ -117,6 +117,11 @@ public class GlobalExceptionHandler(
                 "Invalid Request access"
             ),
 
+            MemberAlreadyExistedException => (
+                StatusCodes.Status403Forbidden,
+                "Member already exised"
+            ),
+
             _ => (
                 StatusCodes.Status500InternalServerError,
                 "Unknown System Error"

@@ -12,6 +12,13 @@ public class WorkSpaceMemberConfig : IEntityTypeConfiguration<WorkSpaceMember>
         builder.ToTable("WorkSpaceMember");
         builder.HasKey(t => t.Id);
 
+        builder.HasIndex(t => new
+        {
+            t.WorkSpaceId,
+            t.UserId
+        })
+        .IsUnique();
+
         builder.Property(t => t.Roles)
         .HasMaxLength(100);
         builder.Property(t => t.Status)
