@@ -65,6 +65,8 @@ public class Handler(
             t => t.UserId == req.UserId
             &&
             t.WorkSpaceId == validWf.WorkSpaceId
+            &&
+            t.Status == MemberStatus.Active
             ,ct
         )
         ?? throw new UserNotInWorkspaceException(

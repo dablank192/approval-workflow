@@ -57,8 +57,12 @@ public class Handler(
 {
     public async Task<List<GetAllMemberResult>> Handle(GetAllMemberQuery req, CancellationToken ct)
     {
-        var validUser = await dbContext.WorkSpace.FirstOrDefaultAsync(
-            t => t.CreatedBy == req.UserId,
+        var validUser = await dbContext.WorkSpaceMember.FirstOrDefaultAsync(
+            t => t.UserId == req.UserId
+            &&
+            t.WorkSpaceId == req.WorkspaceId
+            &&
+            t.Status == MemberStatus.Active,
             ct
         )
         ?? throw new UserNotFoundException(reason: "User is not the owner of this workspace");

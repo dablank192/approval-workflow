@@ -61,7 +61,7 @@ public class Handler(
             , ct);
         
         var response = new WorkspaceGetResult(
-            WorkspaceId: wp.Id,
+            WorkspaceId: wp.WorkSpaceId,
             Name: wp.WorkSpace.Name,
             CreatedBy: wp.WorkSpace.CreatedBy,
             CreatedAt: wp.WorkSpace.CreatedAt,

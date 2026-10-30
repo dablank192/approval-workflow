@@ -299,7 +299,8 @@ namespace ApprovalWorkflow.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("WorkSpaceId");
+                    b.HasIndex("WorkSpaceId", "UserId")
+                        .IsUnique();
 
                     b.ToTable("WorkSpaceMember", (string)null);
                 });

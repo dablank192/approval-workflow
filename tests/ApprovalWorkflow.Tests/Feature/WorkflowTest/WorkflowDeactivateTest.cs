@@ -52,7 +52,8 @@ public class WorkflowDeactivateTest : IClassFixture<WebAppFactory>
         var newWpMember = new WorkSpaceMember
         {
             UserId = newUser.Id,
-            WorkSpaceId = newWp.Id
+            WorkSpaceId = newWp.Id,
+            Roles = MemberRoles.Owner
         };
         dbContext.WorkSpaceMember.Add(newWpMember);
 
