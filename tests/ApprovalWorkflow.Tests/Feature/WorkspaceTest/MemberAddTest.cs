@@ -39,7 +39,15 @@ public class MemberAddTest : IClassFixture<WebAppFactory>
             Password = "tester123",
             DisplayName = "Tester"
         };
-        dbContext.User.Add(newUser);
+        
+        var newMember = new User
+        {
+            Email = "example123@email.com",
+            Password = "tester123",
+            DisplayName = "Tester"           
+        };
+
+        dbContext.User.AddRange(newUser, newMember);
 
         var newWorkspace = new WorkSpace
         {
@@ -48,8 +56,18 @@ public class MemberAddTest : IClassFixture<WebAppFactory>
         };
         dbContext.WorkSpace.Add(newWorkspace);
 
+        var newWorkspaceMember = new WorkSpaceMember
+        {
+            UserId = newUser.Id,
+            WorkSpaceId = newWorkspace.Id,
+            Roles = MemberRoles.Owner,
+            Status = MemberStatus.Active
+        };
+        dbContext.WorkSpaceMember.Add(newWorkspaceMember);
+
         var payload = new MemberAddCommand(
             UserId: newUser.Id,
+            NewMemberId: newMember.Id,
             WorkspaceId: newWorkspace.Id,
             Roles: MemberRoles.Member
         );
@@ -75,13 +93,23 @@ public class MemberAddTest : IClassFixture<WebAppFactory>
         var verifyDb = verifyScope.ServiceProvider.GetRequiredService<AppDbContext>();
 
         var verifiedUser = await verifyDb.User.SingleAsync(t => t.Id == newUser.Id);
-        var verifiedMember = await verifyDb.WorkSpaceMember.SingleAsync(t => t.UserId == newUser.Id);
+        var verifiedMember = await verifyDb.WorkSpaceMember
+        .SingleAsync(
+            t => t.UserId == newMember.Id
+            &&
+            t.WorkSpaceId == newWorkspace.Id
+            );
         var verifiedWp = await verifyDb.WorkSpace.SingleAsync(t => t.Id == newWorkspace.Id);
 
         Assert.NotNull(response);
 
         Assert.Equal(
-            expected: verifiedUser.Id,
+            expected: HttpStatusCode.Created,
+            actual: response.StatusCode
+        );
+
+        Assert.Equal(
+            expected: newMember.Id,
             actual: verifiedMember.UserId
         );
 
@@ -90,9 +118,5 @@ public class MemberAddTest : IClassFixture<WebAppFactory>
             actual: verifiedMember.WorkSpaceId
         );
 
-        Assert.Equal(
-            expected: HttpStatusCode.Created,
-            actual: response.StatusCode
-        );
     }
 }

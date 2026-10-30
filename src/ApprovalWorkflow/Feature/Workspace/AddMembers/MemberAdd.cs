@@ -81,7 +81,7 @@ public class Handler(
             reason: "User's Id not found"
         );
 
-        var memberExisted = await dbContext.User.AnyAsync(t => t.Id == req.UserId, ct);
+        var memberExisted = await dbContext.User.AnyAsync(t => t.Id == req.NewMemberId, ct);
         
         if (!memberExisted) throw new UserNotFoundException(
             reason: "Member's id not found"
@@ -99,7 +99,7 @@ public class Handler(
 
         var newMember = new WorkSpaceMember
         {
-            UserId = req.UserId,
+            UserId = req.NewMemberId,
             WorkSpaceId = req.WorkspaceId,
             Roles = req.Roles
         };
