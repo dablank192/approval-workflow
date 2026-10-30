@@ -92,6 +92,8 @@ public class Handler(
             t => t.UserId == req.ApprovedUserId
             &&
             t.WorkSpaceId == validWorkflow.WorkSpaceId
+            &&
+            t.Status == MemberStatus.Active
             ,ct
         );
 

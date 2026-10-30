@@ -122,6 +122,11 @@ public class GlobalExceptionHandler(
                 "Member already exised"
             ),
 
+            InvalidWorkflowDeactivationException => (
+                StatusCodes.Status403Forbidden,
+                "Invalid Workflow Deactivation"
+            ),
+
             _ => (
                 StatusCodes.Status500InternalServerError,
                 "Unknown System Error"

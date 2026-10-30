@@ -63,11 +63,30 @@ public class Handler(
             t => t.UserId == req.UserId
             &&
             t.WorkSpaceId == validWf.WorkSpaceId
+            &&
+            t.Status == MemberStatus.Active
             ,ct
         )
         ?? throw new UserNotInWorkspaceException(
-            reason: "User must be a Workspace Member"
+            reason: "User must be an active Workspace Member"
         );
+
+        var hasPermission = await dbContext.WorkSpaceMember
+        .AnyAsync(
+            t => t.UserId == req.UserId
+            &&
+            t.WorkSpaceId == validWf.WorkSpaceId
+            &&
+            t.Status == MemberStatus.Active
+            &&
+            (t.Roles == MemberRoles.Admin || t.Roles == MemberRoles.Owner)
+            ,ct
+        );
+
+        if(!hasPermission) throw new InvalidWorkflowDeactivationException(
+            reason: "User must be either Admin or Owner to deactivate the Workflow"
+        );
+        
 
         if(validWf.Status != WorkflowStatus.Active) throw new InvalidWorkflowStatusException(
             reason: "Workflow status for deactivation must be in Active"
