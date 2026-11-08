@@ -2,6 +2,7 @@ using System;
 using ApprovalWorkflow.Common.Api;
 using ApprovalWorkflow.Common.Exceptions;
 using ApprovalWorkflow.Common.Extensions;
+using ApprovalWorkflow.Feature.Workspace.Exceptions;
 using ApprovalWorkflow.Infrastructure.Persistence;
 using ApprovalWorkflow.Infrastructure.Persistence.Entities;
 using MediatR;
@@ -16,12 +17,12 @@ public record WorkflowGetQuery(
 ) : IRequest<List<WorkflowGetResult>>;
 
 public record WorkflowGetResult(
-    Guid WorkflowId,
-    Guid WorkspaceId,
-    string WorkflowName,
-    string Description,
-    WorkflowStatus Status,
-    int StepCount
+    Guid? WorkflowId,
+    Guid? WorkspaceId,
+    string? WorkflowName,
+    string? Description,
+    WorkflowStatus? Status,
+    int? StepCount
 );
 
 public class WorkflowGet(
@@ -59,6 +60,39 @@ public class Handler(
             reason: "Workspace's Id not existed or workspace's Id invalid"
         );
 
-        //continue here
+        var validMemberQuery = dbContext.WorkSpaceMember
+        .Where(
+            t => t.WorkSpaceId == req.WorkspaceId
+            &&
+            t.UserId == req.UserId
+            &&
+            t.Status == MemberStatus.Active
+        );
+
+        var validWpMember = await validMemberQuery.AnyAsync(ct);
+
+        if(!validWpMember) throw new UserNotInWorkspaceException(
+            reason: "User's status must be active and belong in the Workspace"
+        );
+
+        var validWf = await dbContext.WorkFlow
+        .Where(
+            t => t.WorkSpaceId == req.WorkspaceId
+            &&
+            validMemberQuery.Any()
+        )
+        .Select(
+            t => new WorkflowGetResult(
+                WorkflowId: t.Id,
+                WorkspaceId: t.WorkSpaceId,
+                WorkflowName: t.Name,
+                Description: t.Description,
+                Status: t.Status,
+                StepCount: t.WorkFlowSteps.Count
+            )
+        )
+        .ToListAsync(ct);
+
+        return validWf;
     }
 }
