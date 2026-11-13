@@ -76,6 +76,7 @@ public class Handler(
         );
 
         var validWf = await dbContext.WorkFlow
+        .OrderByDescending(t => t.CreatedAt)
         .Where(
             t => t.WorkSpaceId == req.WorkspaceId
             &&
