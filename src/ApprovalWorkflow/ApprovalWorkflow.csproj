@@ -38,6 +38,8 @@
     <Folder Include="Feature\Request\GetRequestDetail\" />
     <Folder Include="Feature\Request\GetRequest\" />
     <Folder Include="Feature\Request\SubmitRequest\" />
+    <Folder Include="Feature\User\" />
+    <Folder Include="Feature\User\GetUser\" />
     <Folder Include="Feature\Workflow\ActivateWorkflow\" />
     <Folder Include="Feature\Workflow\AddWorkflowStep\" />
     <Folder Include="Feature\Workflow\CreateWorkflow\" />
